@@ -1,4 +1,11 @@
 
+# https://data.worldbank.org/indicator/NY.GDP.PCAP.CD
+
+# https://github.com/owid/covid-19-data/tree/master/public/data
+
+# https://sphere.waterpathogens.org/search?mode=sources
+
+
 # This program creates a data file that contains covid vaccine rates versus mortality, 
 # across time periods, for all US counties.
 
