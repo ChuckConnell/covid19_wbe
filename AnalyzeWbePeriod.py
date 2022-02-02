@@ -30,6 +30,46 @@ CountyVaxMortalityDF.hist(column="OnePlusVaxPer100", bins=10)
 CountyVaxMortalityDF.hist(column="DeathsPer100k", bins=10)
 CountyVaxMortalityDF.hist(column="DeathsPer100k", bins=10, range=[0, 200])
 
+#########   EXTREME SETS
+
+# Find the hghest vaccinated 500 counties and the lowest 500. Goal is to throw out the noise in the middle.
+
+HILOW_CUTOFF = 500
+
+CountyVaxHiDF = CountyVaxMortalityDF.nlargest(HILOW_CUTOFF, "FullVaxPer100", keep='all')
+CountyVaxLowDF = CountyVaxMortalityDF.nsmallest(HILOW_CUTOFF, "OnePlusVaxPer100", keep='all')
+
+#print(CountyVaxHiDF.describe(), "n")
+#print(CountyVaxLowDF.describe(), "n")
+
+
+# Get aome stats for these two data sets.
+
+HiVaxMean = round(CountyVaxHiDF.FullVaxPer100.mean(), 1)
+HiVaxStd = round(CountyVaxHiDF.FullVaxPer100.std(), 1)
+HiVaxDeathsMean = round(CountyVaxHiDF.DeathsPer100k.mean(), 1)
+HiVaxDeathsStd = round(CountyVaxHiDF.DeathsPer100k.std(),1) 
+
+LowVaxMean = round(CountyVaxLowDF.OnePlusVaxPer100.mean(), 1)
+LowVaxStd = round(CountyVaxLowDF.OnePlusVaxPer100.std(), 1)
+LowVaxDeathsMean = round(CountyVaxLowDF.DeathsPer100k.mean(), 1)
+LowVaxDeathsStd = round(CountyVaxLowDF.DeathsPer100k.std(), 1)
+
+# Show results
+
+print ("For the highest", HILOW_CUTOFF, "vaxxed counties...")
+print ("Full vax per 100 mean and std are:",  HiVaxMean,  "and", HiVaxStd)
+print ("Deaths per 100k mean and std are:",  HiVaxDeathsMean, "and", HiVaxDeathsStd, "\n")
+
+print ("For the lowest", HILOW_CUTOFF, "vaxxed counties...")
+print ("1+ vax per 100 mean and std are:",  LowVaxMean,  "and", LowVaxStd)
+print ("Deaths per 100k mean and std are:",  LowVaxDeathsMean, "and", LowVaxDeathsStd, "\n")
+
+
+
+###########   MAINE ONLY
+
+print ("\n\nJust for Maine...\n")
 # Just for Maine, to confirm some analysis from a newspaper.
 
 CountyVaxMaineDF = CountyVaxMortalityDF[(CountyVaxMortalityDF.ST_ABBR == 'ME') ]
@@ -50,18 +90,45 @@ CountyVaxMaineDF.plot.scatter(x="OnePlusVaxPer100", y="DeathsPer100k", title="MA
 
 
 '''
-# Make a data set with only highly vaccinated and low vaccinated rows. Goal is to throw out the noise in the middle.
+############    SVI
 
-CountyVaxExtremesDF = CountyVaxMortalityDF[(CountyVaxMortalityDF.FullVaxPer100 >= 70) | (CountyVaxMortalityDF.FullVaxPer100 <= 20)]  
-extreme_rows = CountyVaxExtremesDF.shape[0]
+print ("\n\nSVI results...\n")
 
-# Compute correlation between death ranking and vax rankings. We will do both vax rankings because it is easy and might be interesting.
+SviCorr = (CountyVaxMortalityDF["DeathsPer100k"].corr(CountyVaxMortalityDF["Overall_SVI_Pct"], method="spearman")).round(3)
 
-ExtremeVaxCorr = (CountyVaxExtremesDF["DeathsPer100k"].corr(CountyVaxExtremesDF["FullVaxPer100"], method="spearman")).round(3)
+print ("SVI to death correlation (Spearman) for all US counties over", county_rows, "data points is", SviCorr, "\n")
 
-print ("Extreme vax to death correlation (Spearman) for all US counties over", extreme_rows, "data points is", ExtremeVaxCorr, "\n")
+CountyVaxMortalityDF.plot.scatter(x="Overall_SVI_Pct", y="DeathsPer100k", title="US Counties -- SVI % vs Deaths per 100k -- " + str(county_rows) + " data points" )
 
-# Show some data visualizations.
+CountyVaxMortalityDF.hist(column="Overall_SVI_Pct", bins=10)
 
-CountyVaxExtremesDF.plot.scatter(x="FullVaxPer100", y="DeathsPer100k", title="US Counties -- Extreme Vax vs Deaths -- " + str(extreme_rows) + " data points" )
+
+
+############    Not Fully Vaxxed + SVI
+
+print ("\n\nNot Fully Vaxxed + SVI results...\n")
+
+NFV_Plus_SVI_Corr = (CountyVaxMortalityDF["DeathsPer100k"].corr(CountyVaxMortalityDF["NFV_Plus_SVI"], method="spearman")).round(3)
+
+print ("Not Fully Vaxxed + SVI to death correlation (Spearman) for all US counties over", county_rows, "data points is", NFV_Plus_SVI_Corr, "\n")
+
+CountyVaxMortalityDF.plot.scatter(x="NFV_Plus_SVI", y="DeathsPer100k", title="US Counties -- Not Fully Vaxxed + SVI % vs Deaths per 100k -- " + str(county_rows) + " data points" )
+
+CountyVaxMortalityDF.hist(column="NFV_Plus_SVI", bins=10)
+'''
+
+
+
+'''
+############    OBESITY 
+
+print ("\n\nObesity results...\n")
+
+ObesityCorr = (CountyVaxMortalityDF["DeathsPer100k"].corr(CountyVaxMortalityDF["Obesity_Percentage"], method="spearman")).round(3)
+
+print ("Obesity to death correlation (Spearman) for all US counties over", county_rows, "data points is", ObesityCorr, "\n")
+
+CountyVaxMortalityDF.plot.scatter(x="Obesity_Percentage", y="DeathsPer100k", title="US Counties -- Obesity % vs Deaths per 100k -- " + str(county_rows) + " data points" )
+
+CountyVaxMortalityDF.hist(column="Obesity_Percentage", bins=10)
 '''
