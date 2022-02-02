@@ -7,7 +7,9 @@
 
 
 # This program creates a data file that contains covid vaccine rates versus mortality, 
-# across time periods, for all US counties.
+# across time periods, for all US counties. 
+
+# Added in obesity info to see how this correlates.
 
 import pandas as pd 
 from month_abbreviation import us_state_to_abbrev
@@ -33,11 +35,17 @@ DeathDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
 path = "~/Desktop/COVID Programming/US Census/co-est2020.csv"
 PopDF = pd.read_csv(path, sep=',', header='infer', dtype=str, encoding='latin-1')
 
+# https://gis.cdc.gov/grasp/diabetes/DiabetesAtlas.html
+# For SVI see https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
+path = "~/Desktop/COVID Programming/CDC/DiabetesAtlasData_2018.csv"
+ObesityDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
+
 # We only need a few columns from the files. 
 
 VaxDF = VaxDF[["Date", "Recip_County", "Recip_State", "Series_Complete_Yes", "Administered_Dose1_Recip"]]
 DeathDF = DeathDF[["date", "county", "state", "deaths"]]
 PopDF = PopDF[["STNAME", "CTYNAME", "POPESTIMATE2020"]]
+ObesityDF = ObesityDF[["County", "State", "Obesity Percentage", "Overall SVI"]]
 
 # Fix the data types and clean up missing values. For any column name that has a space, change it to underscore.
 
@@ -50,31 +58,45 @@ DeathDF["deaths"] = pd.to_numeric(DeathDF["deaths"], errors='coerce').fillna(0).
 
 PopDF["POPESTIMATE2020"] = pd.to_numeric(PopDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
 
+ObesityDF["Obesity_Percentage"] = pd.to_numeric(ObesityDF["Obesity Percentage"], errors='coerce').fillna(0)
+ObesityDF["Overall_SVI"] = pd.to_numeric(ObesityDF["Overall SVI"], errors='coerce').fillna(0)
+ObesityDF = ObesityDF.drop(columns=["Obesity Percentage", "Overall SVI"])  
+
 # Misc data clean up looking for obviously bad rows.
 
 VaxDF = VaxDF[VaxDF.Series_Complete_Yes >= 0]
 VaxDF = VaxDF[VaxDF.Administered_Dose1_Recip >= 0]
 DeathDF = DeathDF[DeathDF.deaths >= 0]
 PopDF = PopDF[PopDF.POPESTIMATE2020 > 0]   
+ObesityDF = ObesityDF[ObesityDF.Obesity_Percentage >= 0]   
+ObesityDF = ObesityDF[ObesityDF.Obesity_Percentage <= 100]   
+ObesityDF = ObesityDF[ObesityDF.Overall_SVI >= 0]   
+ObesityDF = ObesityDF[ObesityDF.Overall_SVI <= 100]   
 
-# In the population and death files, the states are spelled out. We want the abbreviation.
+
+# In some source files, the states are spelled out. We want the abbreviation.
 
 DeathDF["state_abbr"] = DeathDF['state'].map(us_state_to_abbrev).fillna(DeathDF["state"])
 PopDF["ST_ABBR"] = PopDF['STNAME'].map(us_state_to_abbrev).fillna(PopDF["STNAME"])
+ObesityDF["State_Abbr"] = ObesityDF['State'].map(us_state_to_abbrev).fillna(ObesityDF["State"])
 
 DeathDF = DeathDF.drop(columns=["state"])   # don't need these anymore
 PopDF = PopDF.drop(columns=["STNAME"])
+ObesityDF = ObesityDF.drop(columns=["State"])
 
 # Make the counties upper case.
 
 VaxDF["Recip_County"] = VaxDF["Recip_County"].str.upper()
 DeathDF["county"] = DeathDF["county"].str.upper()
 PopDF["CTYNAME"] = PopDF["CTYNAME"].str.upper()
+ObesityDF["County"] = ObesityDF["County"].str.upper()
 
-# The Vax and Pop files have the word COUNTY on the county name. Trim this for consistency.
+
+# Some data files have COUNTY on the county name. Trim this for consistency.
 
 VaxDF["Recip_County"] = VaxDF["Recip_County"].str.split(" COUNTY").str[0]
 PopDF["CTYNAME"] = PopDF["CTYNAME"].str.split(" COUNTY").str[0]
+ObesityDF["County"] = ObesityDF["County"].str.split(" COUNTY").str[0]
 
 # Make a new column that is "STATE-COUNTY" in each dataset. 
 # Note that some of the counties are not counties, but something like "Bethel Census Area". We will go with this for now
@@ -83,21 +105,26 @@ PopDF["CTYNAME"] = PopDF["CTYNAME"].str.split(" COUNTY").str[0]
 VaxDF["STATE-COUNTY"] = VaxDF["Recip_State"] + "-" + VaxDF["Recip_County"]
 DeathDF["STATE-COUNTY"] = DeathDF["state_abbr"] + "-" + DeathDF["county"]
 PopDF["STATE-COUNTY"] = PopDF["ST_ABBR"] + "-" + PopDF["CTYNAME"]
+ObesityDF["STATE-COUNTY"] = ObesityDF["State_Abbr"] + "-" + ObesityDF["County"]
 
 # Get rid of the separate state and county fields, but keep one for state since it could be useful for some analysis.
 
 VaxDF = VaxDF.drop(columns=["Recip_State", "Recip_County"])  
 DeathDF = DeathDF.drop(columns=["state_abbr", "county"])
 PopDF = PopDF.drop(columns=["CTYNAME"])   # keep ST_ABBR
+ObesityDF = ObesityDF.drop(columns=["State_Abbr", "County"])
+
 
 '''
 print (VaxDF.head(10), "\n")
 print (DeathDF.head(10), "\n")
 print (PopDF.head(10), "\n")
+print (ObesityDF.head(10), "\n")
 
 print (VaxDF.dtypes, "\n")
 print (DeathDF.dtypes, "\n")
 print (PopDF.dtypes, "\n")
+print (ObesityDF.dtypes, "\n")
 '''
 
 # Make a DataFrame that will hold all of our results.
@@ -154,6 +181,9 @@ for this_period in range(PERIOD_COUNT):
     AllCountiesOnePeriodDF = AllCountiesOnePeriodDF.merge(PeriodStartVaxDF, how='inner', on="STATE-COUNTY")
     AllCountiesOnePeriodDF = AllCountiesOnePeriodDF.merge(PeriodEndVaxDF, how='inner', on="STATE-COUNTY")
     
+    # Not getting anything interesting from adding obesity and SVI info, so don't join it.
+    #AllCountiesOnePeriodDF = AllCountiesOnePeriodDF.merge(ObesityDF, how='inner', on="STATE-COUNTY")
+    
     # Add all counties for this time period to the overall result set. 
     
     AllCountiesAllPeriodsDF = AllCountiesAllPeriodsDF.append(AllCountiesOnePeriodDF)
@@ -187,7 +217,24 @@ AllCountiesAllPeriodsDF = AllCountiesAllPeriodsDF[AllCountiesAllPeriodsDF.OnePlu
 
 AllCountiesAllPeriodsDF = AllCountiesAllPeriodsDF[AllCountiesAllPeriodsDF.DeathsPer100k >= 0]
 
+
+'''
+# This stuff has turned out not to be useful.
+# Make a new column that changes SVI to a percent.
+
+AllCountiesAllPeriodsDF["Overall_SVI_Pct"] = (100*(AllCountiesAllPeriodsDF["Overall_SVI"])).round(1)
+
+# Make a new column that is "not fully vaxed" as a percent.
+
+AllCountiesAllPeriodsDF["NotFullVaxPer100"] = (100 - (AllCountiesAllPeriodsDF["FullVaxPer100"])).round(1)
+
+# Add column that combines Not Vaxxed and SVI.
+
+AllCountiesAllPeriodsDF["NFV_Plus_SVI"] = (AllCountiesAllPeriodsDF["NotFullVaxPer100"] + AllCountiesAllPeriodsDF["Overall_SVI_Pct"]).round(1)
+'''
+
 # Write to file.
 
 print ("Writing county output to", COUNTY_OUTPUT_FILE, "with", AllCountiesAllPeriodsDF.shape[0], "rows.\n")
 AllCountiesAllPeriodsDF.to_csv(COUNTY_OUTPUT_FILE, encoding='utf-8', sep='\t', index=False)
+
