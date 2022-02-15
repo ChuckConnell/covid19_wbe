@@ -3,8 +3,9 @@
 # in that location at that time. 
 
 import pandas as pd 
-from month_abbreviation import us_state_to_abbrev
 from sys import exit
+
+from wbe_helpers import us_state_to_abbrev
 
 #OVERALL_START_DATE = pd.to_datetime("2020-03-01")
 #PERIOD_LENGTH = 180 # days over which to count deaths
@@ -19,9 +20,9 @@ OUTPUT_FILE = "NwssRawEnhanced.tsv"
 # Get the source data. 
 # Some of these could be automated downloads, but for now I am using snapshots on approxiately the same date.
 
-# Wastewater samples. Acquired by restricted download from CDC.
+# Wastewater samples raw data. Acquired by restricted download from CDC, after signing data-use agreement.
 path = "~/Desktop/COVID Programming/CDC/cdc-nwss-restricted-data-set-wastewater-2022-02-08.csv"
-SamplesDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
+SampleDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
 
 # Vaccination
 # https://data.cdc.gov/Vaccinations/COVID-19-Vaccinations-in-the-United-States-County/8xkx-amqh 
@@ -31,83 +32,100 @@ VaxDF = pd.read_csv(path, sep='\t', header='infer', dtype=str)
 # Cases and deaths
 # https://github.com/nytimes/covid-19-data
 path = "~/Desktop/COVID Programming/NYT/us-counties-10feb2022.csv"
-CasesDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
+CaseDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
+
+# Cases, hosp, icu, deaths, at case detail level
+# Maybe process this dataset first and create a summary per day-county?
+# Or a summary that shows increasing values by day?
+# https://data.cdc.gov/Case-Surveillance/COVID-19-Case-Surveillance-Public-Use-Data-with-Ge/n8mc-b4w4
 
 # Population, to compute per capita
-# https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-counties-total.html  
+# From https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-counties-total.html  
 path = "~/Desktop/COVID Programming/US Census/co-est2020.csv"
 PopDF = pd.read_csv(path, sep=',', header='infer', dtype=str, encoding='latin-1')
 
-# We only need a few columns from the files. 
+# FIPS to county names, from https://www.ncei.noaa.gov/erddap/convert/fipscounty.html in February 2022.
+path = "~/Desktop/COVID Programming/fips_counties.tsv"
+FipsDF = pd.read_csv(path, sep='\t', header='infer', dtype=str, encoding='latin-1')
 
+# We don't need every column from the files.
+
+FipsDF = FipsDF[["FIPS", "STATE-COUNTY"]]
+SampleDF = SampleDF[["wwtp_name","wwtp_jurisdiction", "county_names", "sample_collect_date"]]
 VaxDF = VaxDF[["Date", "Recip_County", "Recip_State", "Series_Complete_Yes", "Administered_Dose1_Recip"]]
-CasesDF = CasesDF[["date", "county", "state", "cases", "deaths"]]
+CaseDF = CaseDF[["date", "county", "state", "cases", "deaths"]]
 PopDF = PopDF[["STNAME", "CTYNAME", "POPESTIMATE2020"]]
 
 # Fix the data types and clean up missing values. For any column name that has a space, change it to underscore.
+
+SampleDF["sample_collect_date"] = pd.to_datetime(SampleDF["sample_collect_date"], errors='coerce')
 
 VaxDF["Date"] = pd.to_datetime(VaxDF["Date"], errors='coerce')
 VaxDF["Series_Complete_Yes"] = pd.to_numeric(VaxDF["Series_Complete_Yes"], errors='coerce').fillna(0).astype(int)
 VaxDF["Administered_Dose1_Recip"] = pd.to_numeric(VaxDF["Administered_Dose1_Recip"], errors='coerce').fillna(0).astype(int)
 
-CasesDF["date"] = pd.to_datetime(CasesDF["date"], errors='coerce')
-CasesDF["deaths"] = pd.to_numeric(CasesDF["deaths"], errors='coerce').fillna(0).astype(int)
-CasesDF["cases"] = pd.to_numeric(CasesDF["cases"], errors='coerce').fillna(0).astype(int)
+CaseDF["date"] = pd.to_datetime(CaseDF["date"], errors='coerce')
+CaseDF["deaths"] = pd.to_numeric(CaseDF["deaths"], errors='coerce').fillna(0).astype(int)
+CaseDF["cases"] = pd.to_numeric(CaseDF["cases"], errors='coerce').fillna(0).astype(int)
 
 PopDF["POPESTIMATE2020"] = pd.to_numeric(PopDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
 
 # Misc data clean up looking for obviously bad rows.
 
+# TODO throw out bad samples
 VaxDF = VaxDF[VaxDF.Series_Complete_Yes >= 0]
 VaxDF = VaxDF[VaxDF.Administered_Dose1_Recip >= 0]
-CasesDF = CasesDF[CasesDF.deaths >= 0]
-CasesDF = CasesDF[CasesDF.cases >= 0]
+CaseDF = CaseDF[CaseDF.deaths >= 0]
+CaseDF = CaseDF[CaseDF.cases >= 0]
 PopDF = PopDF[PopDF.POPESTIMATE2020 > 0]   
 
-# In some source files, the states are spelled out. We want the abbreviation.
+# The WBE sample file has a LIST of counties on each row. Change to one county per row.
+# Also clarify that these are FIPS codes, not regular county names.
+                                                            
+SampleDF = SampleDF.rename(columns={"county_names": "county_fips"})
+SampleDF["county_fips"] = SampleDF["county_fips"].str.split(",")
+SampleDF = SampleDF.explode("county_fips")
+SampleDF["county_fips"] = SampleDF["county_fips"].str.strip("[]' ")
 
-CasesDF["state_abbr"] = CasesDF['state'].map(us_state_to_abbrev).fillna(CasesDF["state"])
-PopDF["ST_ABBR"] = PopDF['STNAME'].map(us_state_to_abbrev).fillna(PopDF["STNAME"])
+# In each data source, we need a column that is STATE-COUNTY, so we can use it as a join key.
 
-CasesDF = CasesDF.drop(columns=["state"])   # don't need these anymore
-PopDF = PopDF.drop(columns=["STNAME"])
+# TODO add state-county to samples, based on fips
 
-# Make the counties upper case.
+CaseDF["state_abbr"] = CaseDF['state'].str.upper().map(us_state_to_abbrev).fillna(CaseDF["state"])
+CaseDF["county"] = CaseDF["county"].str.upper()
+CaseDF["STATE-COUNTY"] = CaseDF["state_abbr"] + "-" + CaseDF["county"]
+CaseDF = CaseDF.drop(columns=["state_abbr", "county", "state"])
 
 VaxDF["Recip_County"] = VaxDF["Recip_County"].str.upper()
-CasesDF["county"] = CasesDF["county"].str.upper()
-PopDF["CTYNAME"] = PopDF["CTYNAME"].str.upper()
-
-
-# Some data files have COUNTY on the county name. Trim this for consistency.
-
-VaxDF["Recip_County"] = VaxDF["Recip_County"].str.split(" COUNTY").str[0]
-PopDF["CTYNAME"] = PopDF["CTYNAME"].str.split(" COUNTY").str[0]
-
-# Make a new column that is "STATE-COUNTY" in each dataset. 
-# Note that some of the counties are not counties, but something like "Bethel Census Area". We will go with this for now
-# because it might join to a matching item across our files.
-
+VaxDF["Recip_County"] = VaxDF["Recip_County"].str.split(" COUNTY").str[0]  # drop the word COUNTY
 VaxDF["STATE-COUNTY"] = VaxDF["Recip_State"] + "-" + VaxDF["Recip_County"]
-CasesDF["STATE-COUNTY"] = CasesDF["state_abbr"] + "-" + CasesDF["county"]
-PopDF["STATE-COUNTY"] = PopDF["ST_ABBR"] + "-" + PopDF["CTYNAME"]
-
-# Get rid of the separate state and county fields, but keep one for state since it could be useful for some analysis.
-
 VaxDF = VaxDF.drop(columns=["Recip_State", "Recip_County"])  
-CasesDF = CasesDF.drop(columns=["state_abbr", "county"])
-PopDF = PopDF.drop(columns=["CTYNAME"])   # keep ST_ABBR
+
+PopDF["ST_ABBR"] = PopDF['STNAME'].str.upper().map(us_state_to_abbrev).fillna(PopDF["STNAME"])
+PopDF["CTYNAME"] = PopDF["CTYNAME"].str.upper()
+PopDF["CTYNAME"] = PopDF["CTYNAME"].str.split(" COUNTY").str[0]
+PopDF["STATE-COUNTY"] = PopDF["ST_ABBR"] + "-" + PopDF["CTYNAME"]
+PopDF = PopDF.drop(columns=["CTYNAME", "STNAME"])   # keep ST_ABBR
 
 
+print (SampleDF.head(10), "\n")
 print (VaxDF.head(10), "\n")
-print (CasesDF.head(10), "\n")
+print (CaseDF.head(10), "\n")
 print (PopDF.head(10), "\n")
+print (FipsDF.head(10), "\n")
 
+print (SampleDF.dtypes, "\n")
 print (VaxDF.dtypes, "\n")
-print (CasesDF.dtypes, "\n")
+print (CaseDF.dtypes, "\n")
 print (PopDF.dtypes, "\n")
+print (FipsDF.dtypes, "\n")
+
 
 exit()
+
+#
+# The code below here is copied from a similar program. I am stealing peices of it then will delete.
+#
 
 # Make a DataFrame that will hold all of our results.
 
