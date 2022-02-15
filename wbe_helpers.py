@@ -1,4 +1,4 @@
-# Helped functions related to USA states and counties.
+# Helper functions related to USA states and counties.
 
 # Change US state names to abbreviations. Note that Python dicts are case sensitive, so input should be in upper case.
 
