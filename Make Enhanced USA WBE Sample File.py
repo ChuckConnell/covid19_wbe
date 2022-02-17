@@ -12,8 +12,8 @@ from wbe_helpers import us_state_to_abbrev
 #PERIOD_COUNT = 1  # how many time blocks to count
 VAX_LOOK_BACK = 10     # how far back from sample date do we look for vax info
 CASES_LOOK_AHEAD = 7     # how far ahead of sample do we look for case info
-HOSP_LOOK_AHEAD = 10     # how far ahead of sample do we look for hospitalization info
-ICU_LOOK_AHEAD = 15     # how far ahead of sample do we look for ICU info
+HOSP_LOOK_AHEAD = 14     # how far ahead of sample do we look for hospitalization info
+ICU_LOOK_AHEAD = 14     # how far ahead of sample do we look for ICU info
 DEATHS_LOOK_AHEAD = 21     # how far ahead of sample do we look for mortality info
 SAMPLES_OUTPUT_FILE = "NwssRawEnhanced.tsv"
 
@@ -62,8 +62,8 @@ PopDF = PopDF[["STNAME", "CTYNAME", "POPESTIMATE2020"]]
 
 SampleDF["sample_collect_date"] = pd.to_datetime(SampleDF["sample_collect_date"], errors='coerce')
 
-VaxDF = VaxDF.rename(columns={"Date": "Vax_Date"})
-VaxDF["Vax_Date"] = pd.to_datetime(VaxDF["Vax_Date"], errors='coerce')
+VaxDF = VaxDF.rename(columns={"Date": "VaxDate"})
+VaxDF["VaxDate"] = pd.to_datetime(VaxDF["VaxDate"], errors='coerce')
 VaxDF["Series_Complete_Yes"] = pd.to_numeric(VaxDF["Series_Complete_Yes"], errors='coerce').fillna(0).astype(int)
 VaxDF["Administered_Dose1_Recip"] = pd.to_numeric(VaxDF["Administered_Dose1_Recip"], errors='coerce').fillna(0).astype(int)
 
@@ -111,16 +111,26 @@ PopDF["CTYNAME"] = PopDF["CTYNAME"].str.split(" COUNTY").str[0]
 PopDF["STATE-COUNTY"] = PopDF["ST_ABBR"] + "-" + PopDF["CTYNAME"]
 PopDF = PopDF.drop(columns=["CTYNAME", "STNAME", "ST_ABBR"])
 
-# Add county population to each sample row. The join/merge operation changes ints to floats, so fix the datatype after the join.
+# Create some additional date columns on the sample file. These will be used to add the 
+# look ahead / look back info.
+
+SampleDF["vax_date"] = SampleDF["sample_collect_date"] -  pd.offsets.Day(VAX_LOOK_BACK)
+SampleDF["cases_date"] = SampleDF["sample_collect_date"] + pd.offsets.Day(CASES_LOOK_AHEAD)
+SampleDF["hosp_date"] = SampleDF["sample_collect_date"] +  pd.offsets.Day(HOSP_LOOK_AHEAD)
+SampleDF["icu_date"] = SampleDF["sample_collect_date"] +  pd.offsets.Day(ICU_LOOK_AHEAD)
+SampleDF["deaths_date"] = SampleDF["sample_collect_date"] +  pd.offsets.Day(DEATHS_LOOK_AHEAD)
+
+# Add vax % from the look-back date. The join/merge operation changes ints to floats, so fix the datatype after the join.
+
+SampleDF = SampleDF.merge(VaxDF, how='left', left_on=["vax_date", "STATE-COUNTY"], right_on=["VaxDate", "STATE-COUNTY"])
+SampleDF["Series_Complete_Yes"] = pd.to_numeric(SampleDF["Series_Complete_Yes"], errors='coerce').fillna(0).astype(int)
+SampleDF["Administered_Dose1_Recip"] = pd.to_numeric(SampleDF["Administered_Dose1_Recip"], errors='coerce').fillna(0).astype(int)
+SampleDF = SampleDF.drop(columns=["VaxDate"])   # we had two columns with same info
+
+# Add county population to each sample row. 
 
 SampleDF = SampleDF.merge(PopDF, how='left', on="STATE-COUNTY")
 SampleDF["POPESTIMATE2020"] = pd.to_numeric(SampleDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
-
-# Add vax % on the date of each sample.
-
-SampleDF = SampleDF.merge(VaxDF, how='left', left_on=["sample_collect_date", "STATE-COUNTY"], right_on=["Vax_Date", "STATE-COUNTY"])
-SampleDF["Series_Complete_Yes"] = pd.to_numeric(SampleDF["Series_Complete_Yes"], errors='coerce').fillna(0).astype(int)
-SampleDF["Administered_Dose1_Recip"] = pd.to_numeric(SampleDF["Administered_Dose1_Recip"], errors='coerce').fillna(0).astype(int)
 
 
 # Debugging
