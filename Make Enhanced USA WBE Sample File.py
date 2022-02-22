@@ -1,15 +1,11 @@
 
 # Take the full CDC NWSS dataset and add fields for vax status, cases, hospitalizations and deaths,
-# in that location at that time. 
+# in that location at that time. But be clever about what dates we use for vax, death, etc since these
+# dates need a setback or set-forward to be meaningul to the wastewater signal.
 
 import pandas as pd 
 from sys import exit
 
-from wbe_helpers import us_state_to_abbrev
-
-#OVERALL_START_DATE = pd.to_datetime("2020-03-01")
-#PERIOD_LENGTH = 180 # days over which to count deaths
-#PERIOD_COUNT = 1  # how many time blocks to count
 VAX_LOOK_BACK = 10     # how far back from sample date do we look for vax info
 CASES_LOOK_AHEAD = 7     # how far ahead of sample do we look for case info
 HOSP_LOOK_AHEAD = 14     # how far ahead of sample do we look for hospitalization info
@@ -19,97 +15,51 @@ SAMPLES_OUTPUT_FILE = "NwssRawEnhanced.tsv"
 
 
 # Get the source data. 
-# Some of these could be automated downloads, but for now I am using snapshots on approxiately the same date.
 
 # Wastewater samples raw data. Acquired by restricted download from CDC, after signing data-use agreement.
 #path = "~/Desktop/COVID Programming/CDC/cdc-nwss-restricted-data-set-wastewater-2022-02-08.csv"
 path = "~/Desktop/COVID Programming/CDC/wastewater-2022-02-08-small.csv"
 SampleDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
 
-# Vaccination
-# https://data.cdc.gov/Vaccinations/COVID-19-Vaccinations-in-the-United-States-County/8xkx-amqh 
-path = "~/Desktop/COVID Programming/CDC/COVID-19_Vaccinations_in_the_United_States_County_10feb2022.tsv"
-VaxDF = pd.read_csv(path, sep='\t', header='infer', dtype=str)
-
-# Cases and deaths
-# https://github.com/nytimes/covid-19-data
-path = "~/Desktop/COVID Programming/NYT/us-counties-10feb2022.csv"
-CaseDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
-
-# Cases, hosp, icu, deaths, at case detail level
-# Maybe process this dataset first and create a summary per day-county?
-# Or a summary that shows increasing values by day?
-# https://data.cdc.gov/Case-Surveillance/COVID-19-Case-Surveillance-Public-Use-Data-with-Ge/n8mc-b4w4
+# Covid facts per county from https://apidocs.covidactnow.org. You need an API key, which they give to anyone who asks.
+#path = "~/Desktop/COVID Programming/Covid Act Now/counties.timeseries-16feb2022.csv"
+path = "~/Desktop/COVID Programming/Covid Act Now/small.csv"
+CovidDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
 
 # Population, to compute per capita
 # From https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-counties-total.html  
 path = "~/Desktop/COVID Programming/US Census/co-est2020.csv"
 PopDF = pd.read_csv(path, sep=',', header='infer', dtype=str, encoding='latin-1')
 
-# FIPS to county names, from https://www.ncei.noaa.gov/erddap/convert/fipscounty.html in February 2022.
-path = "~/Desktop/COVID Programming/fips_counties.tsv"
-FipsDF = pd.read_csv(path, sep='\t', header='infer', dtype=str, encoding='latin-1')
+# Make the population file the way we want it.
 
-# We don't need every column from the files. But keep all the WBE sample fields, since our goal is to ENHANCE this file.
+PopDF = PopDF.rename(columns={"STATE": "StateFIPS", "COUNTY":"CountyFIPS-3"})  # this file has the 3-digit county code
+PopDF["CountyFIPS"] = PopDF["StateFIPS"] + PopDF["CountyFIPS-3"]  # make full 5-digit county FIPS
+PopDF["POPESTIMATE2020"] = pd.to_numeric(PopDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+PopDF = PopDF[["CountyFIPS", "POPESTIMATE2020"]]
 
-FipsDF = FipsDF[["FIPS", "STATE-COUNTY"]]
-VaxDF = VaxDF[["Date", "Recip_County", "Recip_State", "Series_Complete_Yes", "Administered_Dose1_Recip"]]
-CaseDF = CaseDF[["date", "county", "state", "cases", "deaths"]]
-PopDF = PopDF[["STNAME", "CTYNAME", "POPESTIMATE2020"]]
-
-# Fix the data types and clean up missing values. For any column name that has a space, change it to underscore.
-# Clarify some column names.
-
+# Fix the data types and clean up missing values. Clarify column names.
+                                                            
 SampleDF["sample_collect_date"] = pd.to_datetime(SampleDF["sample_collect_date"], errors='coerce')
 
-VaxDF = VaxDF.rename(columns={"Date": "VaxDate"})
-VaxDF["VaxDate"] = pd.to_datetime(VaxDF["VaxDate"], errors='coerce')
-VaxDF["Series_Complete_Yes"] = pd.to_numeric(VaxDF["Series_Complete_Yes"], errors='coerce').fillna(0).astype(int)
-VaxDF["Administered_Dose1_Recip"] = pd.to_numeric(VaxDF["Administered_Dose1_Recip"], errors='coerce').fillna(0).astype(int)
-
-CaseDF["date"] = pd.to_datetime(CaseDF["date"], errors='coerce')
-CaseDF["deaths"] = pd.to_numeric(CaseDF["deaths"], errors='coerce').fillna(0).astype(int)
-CaseDF["cases"] = pd.to_numeric(CaseDF["cases"], errors='coerce').fillna(0).astype(int)
-
-PopDF["POPESTIMATE2020"] = pd.to_numeric(PopDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+CovidDF["covid_facts_date"] = pd.to_datetime(CovidDF["date"], errors='coerce')
 
 # Misc data clean up looking for obviously bad rows.
 
-# TODO throw out bad sample dates
-VaxDF = VaxDF[VaxDF.Series_Complete_Yes >= 0]
-VaxDF = VaxDF[VaxDF.Administered_Dose1_Recip >= 0]
-CaseDF = CaseDF[CaseDF.deaths >= 0]
-CaseDF = CaseDF[CaseDF.cases >= 0]
 PopDF = PopDF[PopDF.POPESTIMATE2020 > 0]   
 
 # The WBE sample file has a LIST of counties on each row. Change to one county per row.
 # Clarify that these are FIPS codes, not regular county names.
-# Then use the FIPS to find the real state and county
                                                             
-SampleDF = SampleDF.rename(columns={"county_names": "FIPS"})
-SampleDF["FIPS"] = SampleDF["FIPS"].str.split(",")
-SampleDF = SampleDF.explode("FIPS")
-SampleDF["FIPS"] = SampleDF["FIPS"].str.strip("[]' ")
+SampleDF = SampleDF.rename(columns={"county_names": "CountyFIPS"})
+SampleDF["CountyFIPS"] = SampleDF["CountyFIPS"].str.split(",")
+SampleDF = SampleDF.explode("CountyFIPS")
+SampleDF["CountyFIPS"] = SampleDF["CountyFIPS"].str.strip("[]' ")
 
-SampleDF = SampleDF.merge(FipsDF, how='left', on="FIPS")
-  
-# In each other data source, we need a column that is STATE-COUNTY, so we can use it as a join key.
+# Add county population to each sample row. Numbers get changed to float during merge, so fix back to integer.
 
-CaseDF["state_abbr"] = CaseDF['state'].str.upper().map(us_state_to_abbrev).fillna(CaseDF["state"])
-CaseDF["county"] = CaseDF["county"].str.upper()
-CaseDF["STATE-COUNTY"] = CaseDF["state_abbr"] + "-" + CaseDF["county"]
-CaseDF = CaseDF.drop(columns=["state_abbr", "county", "state"])
-
-VaxDF["Recip_County"] = VaxDF["Recip_County"].str.upper()
-VaxDF["Recip_County"] = VaxDF["Recip_County"].str.split(" COUNTY").str[0]  # drop the word COUNTY
-VaxDF["STATE-COUNTY"] = VaxDF["Recip_State"] + "-" + VaxDF["Recip_County"]
-VaxDF = VaxDF.drop(columns=["Recip_State", "Recip_County"])  
-
-PopDF["ST_ABBR"] = PopDF['STNAME'].str.upper().map(us_state_to_abbrev).fillna(PopDF["STNAME"])
-PopDF["CTYNAME"] = PopDF["CTYNAME"].str.upper()
-PopDF["CTYNAME"] = PopDF["CTYNAME"].str.split(" COUNTY").str[0]
-PopDF["STATE-COUNTY"] = PopDF["ST_ABBR"] + "-" + PopDF["CTYNAME"]
-PopDF = PopDF.drop(columns=["CTYNAME", "STNAME", "ST_ABBR"])
+SampleDF = SampleDF.merge(PopDF, how='left', on="CountyFIPS")
+SampleDF["POPESTIMATE2020"] = pd.to_numeric(SampleDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
 
 # Create some additional date columns on the sample file. These will be used to add the 
 # look ahead / look back info.
@@ -120,32 +70,33 @@ SampleDF["hosp_date"] = SampleDF["sample_collect_date"] +  pd.offsets.Day(HOSP_L
 SampleDF["icu_date"] = SampleDF["sample_collect_date"] +  pd.offsets.Day(ICU_LOOK_AHEAD)
 SampleDF["deaths_date"] = SampleDF["sample_collect_date"] +  pd.offsets.Day(DEATHS_LOOK_AHEAD)
 
-# Add vax % from the look-back date. The join/merge operation changes ints to floats, so fix the datatype after the join.
+# Make a subset of just the vax facts we want and join it to the samples.
+# Note that we join the vax info from a previous date onto each sample.
 
-SampleDF = SampleDF.merge(VaxDF, how='left', left_on=["vax_date", "STATE-COUNTY"], right_on=["VaxDate", "STATE-COUNTY"])
-SampleDF["Series_Complete_Yes"] = pd.to_numeric(SampleDF["Series_Complete_Yes"], errors='coerce').fillna(0).astype(int)
-SampleDF["Administered_Dose1_Recip"] = pd.to_numeric(SampleDF["Administered_Dose1_Recip"], errors='coerce').fillna(0).astype(int)
-SampleDF = SampleDF.drop(columns=["VaxDate"])   # we had two columns with same info
+VaxDF = CovidDF[["covid_facts_date", "fips", "actuals.vaccinationsInitiated", "actuals.vaccinationsCompleted", "actuals.vaccinationsAdditionalDose", "metrics.vaccinationsInitiatedRatio", "metrics.vaccinationsCompletedRatio", "metrics.vaccinationsAdditionalDoseRatio"]]
 
-# Add county population to each sample row. 
+SampleDF = SampleDF.merge(VaxDF, how='left', left_on=["vax_date", "CountyFIPS"], right_on=["covid_facts_date", "fips"])
+SampleDF = SampleDF.drop(columns=["covid_facts_date", "fips"])
 
-SampleDF = SampleDF.merge(PopDF, how='left', on="STATE-COUNTY")
-SampleDF["POPESTIMATE2020"] = pd.to_numeric(SampleDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+# Add hospitialization facts to the sample file.
+
+
+# Add ICU info
+
+
+# Add mortality info
+
 
 
 # Debugging
 
 print (SampleDF.head(10), "\n")
-print (VaxDF.head(10), "\n")
-print (CaseDF.head(10), "\n")
+print (CovidDF.head(10), "\n")
 print (PopDF.head(10), "\n")
-print (FipsDF.head(10), "\n")
 
 print (SampleDF.dtypes, "\n")
-print (VaxDF.dtypes, "\n")
-print (CaseDF.dtypes, "\n")
+print (CovidDF.dtypes, "\n")
 print (PopDF.dtypes, "\n")
-print (FipsDF.dtypes, "\n")
 
      
 
@@ -252,18 +203,4 @@ AllCountiesAllPeriodsDF = AllCountiesAllPeriodsDF[AllCountiesAllPeriodsDF.OnePlu
 AllCountiesAllPeriodsDF = AllCountiesAllPeriodsDF[AllCountiesAllPeriodsDF.DeathsPer100k >= 0]
 
 
-'''
-# This stuff has turned out not to be useful.
-# Make a new column that changes SVI to a percent.
-
-AllCountiesAllPeriodsDF["Overall_SVI_Pct"] = (100*(AllCountiesAllPeriodsDF["Overall_SVI"])).round(1)
-
-# Make a new column that is "not fully vaxed" as a percent.
-
-AllCountiesAllPeriodsDF["NotFullVaxPer100"] = (100 - (AllCountiesAllPeriodsDF["FullVaxPer100"])).round(1)
-
-# Add column that combines Not Vaxxed and SVI.
-
-AllCountiesAllPeriodsDF["NFV_Plus_SVI"] = (AllCountiesAllPeriodsDF["NotFullVaxPer100"] + AllCountiesAllPeriodsDF["Overall_SVI_Pct"]).round(1)
-'''
 
