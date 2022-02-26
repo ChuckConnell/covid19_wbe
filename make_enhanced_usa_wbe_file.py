@@ -42,37 +42,40 @@ CovidDF["covid_facts_date"] = pd.to_datetime(CovidDF["covid_facts_date"], errors
 
 # Make a few changes to the wastewater samples files.
 
-RawDF["sample_collect_date"] = pd.to_datetime(RawDF["sample_collect_date"], errors='coerce')
+RawDF = RawDF.rename(columns={"county_names": "CountyFIPS", "population_served": "sewershed_population_served"})
 
-RawDF = RawDF.rename(columns={"county_names": "CountyFIPS"})
+RawDF["sample_collect_date"] = pd.to_datetime(RawDF["sample_collect_date"], errors='coerce')
+RawDF["sewershed_population_served"] = pd.to_numeric(RawDF["sewershed_population_served"], errors='coerce').fillna(0).astype(int)
+
 RawDF["CountyFIPS"] = RawDF["CountyFIPS"].str.split(",")    # change comma separate string to array
 RawDF = RawDF.explode("CountyFIPS")          # make one row per county
 RawDF["CountyFIPS"] = RawDF["CountyFIPS"].str.strip("[]' ")   # clean up, one pure FIPS per row
 
-AnalyticDF = AnalyticDF.rename(columns={"date": "sample_collect_date"})
-AnalyticDF["sample_collect_date"] = pd.to_datetime(AnalyticDF["sample_collect_date"], errors='coerce')
+AnalyticDF = AnalyticDF.rename(columns={"county_names": "CountyFIPS", "date": "sample_collect_date", "population_served": "sewershed_population_served"})
 
-AnalyticDF = AnalyticDF.rename(columns={"county_names": "CountyFIPS"})
+AnalyticDF["sample_collect_date"] = pd.to_datetime(AnalyticDF["sample_collect_date"], errors='coerce')
+AnalyticDF["sewershed_population_served"] = pd.to_numeric(AnalyticDF["sewershed_population_served"], errors='coerce').fillna(0).astype(int)
+
 AnalyticDF["CountyFIPS"] = AnalyticDF["CountyFIPS"].str.split(",")   
 AnalyticDF = AnalyticDF.explode("CountyFIPS")
 AnalyticDF["CountyFIPS"] = AnalyticDF["CountyFIPS"].str.strip("[]' ")
 
 # Make a few changes to the population file.
 
-PopDF = PopDF.rename(columns={"STATE":"StateFIPS", "COUNTY":"CountyFIPS-3"})  
+PopDF = PopDF.rename(columns={"STATE":"StateFIPS", "COUNTY":"CountyFIPS-3", "POPESTIMATE2020":"COUNTY_POPESTIMATE2020"})  
 PopDF["CountyFIPS"] = PopDF["StateFIPS"] + PopDF["CountyFIPS-3"]  # make full 5-digit county FIPS
-PopDF["POPESTIMATE2020"] = pd.to_numeric(PopDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
-PopDF = PopDF[["CountyFIPS", "POPESTIMATE2020"]]
-PopDF = PopDF[PopDF.POPESTIMATE2020 > 0]     # throw out bad data
+PopDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(PopDF["COUNTY_POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+PopDF = PopDF[["CountyFIPS", "COUNTY_POPESTIMATE2020"]]  # just the fields we need
+PopDF = PopDF[PopDF.COUNTY_POPESTIMATE2020 > 0]     # throw out bad data
 
 # Add county population to each sample row. 
 # Numbers get changed to float during merge, so fix back to integer.
 
 RawDF = RawDF.merge(PopDF, how='left', on="CountyFIPS")
-RawDF["POPESTIMATE2020"] = pd.to_numeric(RawDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+RawDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(RawDF["COUNTY_POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
 
 AnalyticDF = AnalyticDF.merge(PopDF, how='left', on="CountyFIPS")
-AnalyticDF["POPESTIMATE2020"] = pd.to_numeric(AnalyticDF["POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+AnalyticDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(AnalyticDF["COUNTY_POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
 
 # Create some additional date columns on the sample files. These will be used to add the 
 # look ahead / look back info.
@@ -137,24 +140,21 @@ RawDF.to_csv(RAW_OUTPUT_FILE, encoding='utf-8', sep='\t', index=False)
 print ("Writing enhanced analytic wastewater data to", ANALYTIC_OUTPUT_FILE, "with", AnalyticDF.shape[0], "rows.\n")
 AnalyticDF.to_csv(ANALYTIC_OUTPUT_FILE, encoding='utf-8', sep='\t', index=False)
 
-# Create and write anonymized sample files.
+# Create and write anonymized sample files. The rules for anonymization are in the data-use agreement.
 
 RawSampleDF = RawDF.sample(n=SAMPLE_SIZE)
-AnalyticSampleDF = AnalyticDF.sample(n=SAMPLE_SIZE)
-
-RawSampleDF["CountyFIPS"] = "XXXX"
 RawSampleDF["sample_location"] = "XXXX"
 RawSampleDF["sample_location_specify"] = "XXXX"
 RawSampleDF["wwtp_name"] = "XXXX"
 RawSampleDF["lab_id"] = "XXXX"
-RawSampleDF["key_sewershed"] = "XXXX"
+RawSampleDF = RawSampleDF.query("sewershed_population_served > 3000")
 
-AnalyticSampleDF["CountyFIPS"] = "XXXX"
+AnalyticSampleDF = AnalyticDF.sample(n=SAMPLE_SIZE)
 AnalyticSampleDF["sample_location"] = "XXXX"
 AnalyticSampleDF["sample_location_specify"] = "XXXX"
 AnalyticSampleDF["wwtp_name"] = "XXXX"
 AnalyticSampleDF["lab_id"] = "XXXX"
-AnalyticSampleDF["key_plot"] = "XXXX"
+AnalyticSampleDF = AnalyticSampleDF.query("sewershed_population_served > 3000")
 
 print ("\nWriting anonymized sample of enhanced raw wastewater data to", RAW_OUTPUT_SAMPLE, "with", RawSampleDF.shape[0], "rows.\n")
 RawSampleDF.to_csv(RAW_OUTPUT_SAMPLE, encoding='utf-8', sep='\t', index=False)
