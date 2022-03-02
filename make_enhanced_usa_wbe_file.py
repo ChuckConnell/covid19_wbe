@@ -147,6 +147,7 @@ RawSampleDF["sample_location"] = "XXXX"
 RawSampleDF["sample_location_specify"] = "XXXX"
 RawSampleDF["wwtp_name"] = "XXXX"
 RawSampleDF["lab_id"] = "XXXX"
+RawSampleDF["sample_id"] = "XXXX"
 RawSampleDF = RawSampleDF.query("sewershed_population_served > 3000")
 
 AnalyticSampleDF = AnalyticDF.sample(n=SAMPLE_SIZE)
@@ -154,6 +155,7 @@ AnalyticSampleDF["sample_location"] = "XXXX"
 AnalyticSampleDF["sample_location_specify"] = "XXXX"
 AnalyticSampleDF["wwtp_name"] = "XXXX"
 AnalyticSampleDF["lab_id"] = "XXXX"
+AnalyticSampleDF["sample_id"] = "XXXX"
 AnalyticSampleDF = AnalyticSampleDF.query("sewershed_population_served > 3000")
 
 print ("\nWriting anonymized sample of enhanced raw wastewater data to", RAW_OUTPUT_SAMPLE, "with", RawSampleDF.shape[0], "rows.\n")
