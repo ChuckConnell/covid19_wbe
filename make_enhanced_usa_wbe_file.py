@@ -40,7 +40,7 @@ PopDF = pd.read_csv(path, sep=',', header='infer', dtype=str, encoding='latin-1'
 CovidDF = CovidDF.rename(columns={"metrics.caseDensity":"metrics.caseDensity100k", "date":"covid_facts_date"})
 CovidDF["covid_facts_date"] = pd.to_datetime(CovidDF["covid_facts_date"], errors='coerce')
 
-# Make a few changes to the wastewater samples files.
+# Make a few changes to the raw wastewater samples file.
 
 RawDF = RawDF.rename(columns={"county_names": "CountyFIPS", "population_served": "sewershed_population_served"})
 
@@ -51,13 +51,17 @@ RawDF["CountyFIPS"] = RawDF["CountyFIPS"].str.split(",")    # change comma separ
 RawDF = RawDF.explode("CountyFIPS")          # make one row per county
 RawDF["CountyFIPS"] = RawDF["CountyFIPS"].str.strip("[]' ")   # clean up, one pure FIPS per row
 
+# Make a few changes to the analytic wastewater samples file.
+
+AnalyticDF = AnalyticDF[AnalyticDF["sample_id"].str.strip().str.len() > 0]   # If no sample_id, this is not a real water sample, just a row to hold covid case counts on nearby dates. We are going to add our own case data.
+
 AnalyticDF = AnalyticDF.rename(columns={"county_names": "CountyFIPS", "date": "sample_collect_date", "population_served": "sewershed_population_served"})
 
 AnalyticDF["sample_collect_date"] = pd.to_datetime(AnalyticDF["sample_collect_date"], errors='coerce')
 AnalyticDF["sewershed_population_served"] = pd.to_numeric(AnalyticDF["sewershed_population_served"], errors='coerce').fillna(0).astype(int)
 
-AnalyticDF["CountyFIPS"] = AnalyticDF["CountyFIPS"].str.split(",")   
-AnalyticDF = AnalyticDF.explode("CountyFIPS")
+AnalyticDF["CountyFIPS"] = AnalyticDF["CountyFIPS"].str.split(",")   # one county per row
+AnalyticDF = AnalyticDF.explode("CountyFIPS")    
 AnalyticDF["CountyFIPS"] = AnalyticDF["CountyFIPS"].str.strip("[]' ")
 
 # Make a few changes to the population file.
