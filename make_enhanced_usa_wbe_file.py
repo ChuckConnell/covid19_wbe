@@ -118,7 +118,7 @@ AnalyticDF = AnalyticDF.drop(columns=["covid_facts_date", "fips"])
 
 # Add hospitialization facts to the sample file.
 
-HospDF = CovidDF[["covid_facts_date", "fips", "actuals.icuBeds.currentUsageCovid", "actuals.hospitalBeds.currentUsageCovid"]]
+HospDF = CovidDF[["covid_facts_date", "fips", "actuals.hospitalBeds.capacity", "actuals.icuBeds.capacity", "actuals.hospitalBeds.currentUsageCovid", "actuals.icuBeds.currentUsageCovid"]]
 
 RawDF = RawDF.merge(HospDF, how='left', left_on=["hosp_date", "CountyFIPS"], right_on=["covid_facts_date", "fips"])
 RawDF = RawDF.drop(columns=["covid_facts_date", "fips"])
