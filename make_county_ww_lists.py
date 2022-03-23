@@ -1,9 +1,9 @@
 
 # Compare the counties covered by the COVID-19 wastewater analysis from Biobot and USA CDC NWSS.
 # Make five lists: counties in Biobot, counties in NWSS, counties in both, counties one or the other, counties in neither.
-# Put the counties in "STATE-COUNTY_NAME" format (not FIPS code) so they are readable.
+# Put the counties in "STATE + COUNTY_NAME" format (not FIPS code) so they are readable.
 
-import pandas as pd
+import pandas as pd 
 from urllib import request
 
 USA_COUNTIES_DOWNLOAD = "https://github.com/ChuckConnell/articles/raw/master/fips2county.tsv"
@@ -24,7 +24,7 @@ MISSING_COUNTIES_LIST = "missing_counties.txt"
 
 request.urlretrieve(USA_COUNTIES_DOWNLOAD, USA_COUNTIES_LOCAL)
 AllCountiesDF = pd.read_csv(USA_COUNTIES_LOCAL, sep='\t', header='infer', dtype=str)
-FipsNameDF = AllCountiesDF[["CountyFIPS", "STATE-COUNTY"]]  # will be useful for joins
+FipsNameDF = AllCountiesDF[["CountyFIPS", "STATE_COUNTY"]]  # will be useful for joins
 
 # Get the latest counties covered by Biobot.
 
@@ -51,9 +51,9 @@ NwssDF = NwssDF.merge(FipsNameDF, how="left", left_on=["county_fips"], right_on=
 
 # For each data source, get only the readable county names, and put them into a Python set.
 
-all_counties = set(AllCountiesDF["STATE-COUNTY"])
-biobot_counties = set(BiobotDF["STATE-COUNTY"])
-nwss_counties = set(NwssDF["STATE-COUNTY"])
+all_counties = set(AllCountiesDF["STATE_COUNTY"])
+biobot_counties = set(BiobotDF["STATE_COUNTY"])
+nwss_counties = set(NwssDF["STATE_COUNTY"])
 
 # Find the union, intersection and missing counties.
 
