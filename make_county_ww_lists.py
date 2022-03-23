@@ -1,7 +1,6 @@
 
-# Compare the counties covered by the COVID-19 wastewater analysis from Biobot and USA CDC NWSS.
-# Make five lists: counties in Biobot, counties in NWSS, counties in both, counties one or the other, counties in neither.
-# Put the counties in "STATE + COUNTY_NAME" format (not FIPS code) so they are readable.
+# Compare the counties covered by the COVID-19 wastewater analysis from Biobot and USA CDC NWSS and make lists of the results.
+# Put the counties in "STATE + COUNTY_NAME + FIPS" format so they are readable.
 
 import pandas as pd 
 from urllib import request
@@ -18,13 +17,19 @@ BIOBOT_LIST = "biobot_counties.txt"
 NWSS_LIST = "nwss_counties.txt"
 BIOBOT_NWSS_INTERSECTION_LIST = "biobot_and_nwss_counties.txt"
 BIOBOT_NWSS_UNION_LIST = "biobot_or_nwss_counties.txt"
+BIOBOT_ONLY_LIST = "biobot_only_counties.txt"
+NWSS_ONLY_LIST = "nwss_only_counties.txt"
 MISSING_COUNTIES_LIST = "missing_counties.txt"
+FIPS_MAPPING_DATA = "biobot_nwss_mapping.tsv"
 
-# Get the list of all USA counties. Does not change very often.
+# Get the list of all USA counties. Does not change very often. 
 
 request.urlretrieve(USA_COUNTIES_DOWNLOAD, USA_COUNTIES_LOCAL)
 AllCountiesDF = pd.read_csv(USA_COUNTIES_LOCAL, sep='\t', header='infer', dtype=str)
-FipsNameDF = AllCountiesDF[["CountyFIPS", "STATE_COUNTY"]]  # will be useful for joins
+
+AllCountiesDF["STATE_COUNTY_FIPS"] = AllCountiesDF["STATE_COUNTY"] + " | " + AllCountiesDF["CountyFIPS"]  # Add a useful field that combines state+county+fips. 
+
+AllCountiesDF = AllCountiesDF[["CountyFIPS", "STATE_COUNTY_FIPS"]]  # don't need any other columns
 
 # Get the latest counties covered by Biobot.
 
@@ -33,7 +38,7 @@ BiobotDF = pd.read_csv(BIOBOT_LOCAL, sep=',', header='infer', dtype=str)
 
 BiobotDF = BiobotDF[["fipscode"]]  # don't need any other columns
 BiobotDF.loc[BiobotDF["fipscode"].str.len() == 4, "fipscode"] = "0" + BiobotDF["fipscode"]  # fix problem with missing leading zeroes 
-BiobotDF = BiobotDF.merge(FipsNameDF, how="left", left_on=["fipscode"], right_on=["CountyFIPS"])  # add readable names
+BiobotDF = BiobotDF.merge(AllCountiesDF, how="left", left_on=["fipscode"], right_on=["CountyFIPS"])  # add readable names
 
 # Get the latest counties covered by NWSS. We grab this from their public dataset, not the special restricted data.
 # This dataset sometimes has more than one FIPS per row, so we have to "normalize" and explode these rows.
@@ -47,18 +52,20 @@ NwssDF["county_fips"] = NwssDF["county_fips"].str.split(",")    # change comma s
 NwssDF = NwssDF.explode("county_fips")          # make one row per county
 NwssDF["county_fips"] = NwssDF["county_fips"].str.strip("[]' ")   # clean up, one pure FIPS per row
 
-NwssDF = NwssDF.merge(FipsNameDF, how="left", left_on=["county_fips"], right_on=["CountyFIPS"])  # add readable names
+NwssDF = NwssDF.merge(AllCountiesDF, how="left", left_on=["county_fips"], right_on=["CountyFIPS"])  # add readable names
 
-# For each data source, get only the readable county names, and put them into a Python set.
+# For each data source, get only the field we want in the output lists, and put them into a Python set.
 
-all_counties = set(AllCountiesDF["STATE_COUNTY"])
-biobot_counties = set(BiobotDF["STATE_COUNTY"])
-nwss_counties = set(NwssDF["STATE_COUNTY"])
+all_counties = set(AllCountiesDF["STATE_COUNTY_FIPS"])
+biobot_counties = set(BiobotDF["STATE_COUNTY_FIPS"])
+nwss_counties = set(NwssDF["STATE_COUNTY_FIPS"])
 
 # Find the union, intersection and missing counties.
 
 biobot_nwss_union = biobot_counties.union(nwss_counties)
 biobot_nwss_intersection = biobot_counties.intersection(nwss_counties)
+biobot_only = biobot_counties.difference(nwss_counties)
+nwss_only = nwss_counties.difference(biobot_counties)
 missing_counties = all_counties.difference(biobot_nwss_union)
 
 # Output the result sets in sorted order.
@@ -79,8 +86,17 @@ print ("\nWriting list of " + str(len(biobot_nwss_intersection)) + " counties in
 with open(BIOBOT_NWSS_INTERSECTION_LIST, 'w') as f:
     print(*sorted(biobot_nwss_intersection), file=f, sep="\n")
 
+print ("\nWriting list of " + str(len(biobot_only)) + " counties only in Biobot data to file " + BIOBOT_ONLY_LIST)
+with open(BIOBOT_ONLY_LIST, 'w') as f:
+    print(*sorted(biobot_only), file=f, sep="\n")
+
+print ("\nWriting list of " + str(len(nwss_only)) + " counties only in NWSS data to file " + NWSS_ONLY_LIST)
+with open(NWSS_ONLY_LIST, 'w') as f:
+    print(*sorted(nwss_only), file=f, sep="\n")
+
 print ("\nWriting list of " + str(len(missing_counties)) + " counties not in Biobot or NWSS data to file " + MISSING_COUNTIES_LIST)
 with open(MISSING_COUNTIES_LIST, 'w') as f:
     print(*sorted(missing_counties), file=f, sep="\n")
 
+# TODO output a file that is convient for making a color-coded map of the counties.
 
