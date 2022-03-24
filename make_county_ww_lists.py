@@ -7,11 +7,11 @@ from urllib import request
 
 USA_COUNTIES_DOWNLOAD = "https://github.com/ChuckConnell/articles/raw/master/fips2county.tsv"
 BIOBOT_DOWNLOAD = "https://github.com/biobotanalytics/covid19-wastewater-data/raw/master/wastewater_by_county.csv"
-NWSS_DOWNLOAD = "https://data.cdc.gov/resource/2ew6-ywp6.csv"  # this url only gets 1000 rows, I think it is a CDC bug
+NWSS_DOWNLOAD = "https://data.cdc.gov/resource/2ew6-ywp6.csv"  # this is suposed to be the API url, but it does not get all 156k rows, I think it is a CDC bug
 
 USA_COUNTIES_LOCAL = "/Users/chuck/Desktop/COVID Programming/fips2county.tsv"
 BIOBOT_LOCAL = "/Users/chuck/Desktop/COVID Programming/Biobot/wastewater_by_county.csv"
-NWSS_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/NWSS_Public_SARS-CoV-2_Wastewater_Data.csv"  # i got this manually for now
+NWSS_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/NWSS_Public_SARS-CoV-2_Wastewater_Data.tsv"  # i got this manually for now
 
 BIOBOT_LIST = "biobot_counties.txt"
 NWSS_LIST = "nwss_counties.txt"
@@ -44,7 +44,7 @@ BiobotDF = BiobotDF.merge(AllCountiesDF, how="left", left_on=["fipscode"], right
 # This dataset sometimes has more than one FIPS per row, so we have to "normalize" and explode these rows.
 
 #request.urlretrieve(NWSS_DOWNLOAD, NWSS_LOCAL)   # TODO uncomment when we have a url that will get all rows, using a full local copy for now
-NwssDF = pd.read_csv(NWSS_LOCAL, sep=',', header='infer',  dtype=str)
+NwssDF = pd.read_csv(NWSS_LOCAL, sep='\t', header='infer',  dtype=str)
 
 NwssDF = NwssDF[["county_fips"]]  # don't need any other columns
 
