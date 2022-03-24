@@ -20,9 +20,9 @@ BIOBOT_NWSS_UNION_LIST = "biobot_or_nwss_counties.txt"
 BIOBOT_ONLY_LIST = "biobot_only_counties.txt"
 NWSS_ONLY_LIST = "nwss_only_counties.txt"
 MISSING_COUNTIES_LIST = "missing_counties.txt"
-FIPS_MAPPING_DATA = "biobot_nwss_mapping.tsv"
+FIPS_MAP_DATA = "wbe_coverage_map.tsv"
 
-# Get the list of all USA counties. Does not change very often. 
+# Get the list of all USA counties and tweak as we need it. 
 
 request.urlretrieve(USA_COUNTIES_DOWNLOAD, USA_COUNTIES_LOCAL)
 AllCountiesDF = pd.read_csv(USA_COUNTIES_LOCAL, sep='\t', header='infer', dtype=str)
@@ -31,7 +31,7 @@ AllCountiesDF["STATE_COUNTY_FIPS"] = AllCountiesDF["STATE_COUNTY"] + " | " + All
 
 AllCountiesDF = AllCountiesDF[["CountyFIPS", "STATE_COUNTY_FIPS"]]  # don't need any other columns
 
-# Get the latest counties covered by Biobot.
+# Get the latest counties covered by Biobot, and tweak as we need it.
 
 request.urlretrieve(BIOBOT_DOWNLOAD, BIOBOT_LOCAL)
 BiobotDF = pd.read_csv(BIOBOT_LOCAL, sep=',', header='infer', dtype=str)
@@ -60,7 +60,7 @@ all_counties = set(AllCountiesDF["STATE_COUNTY_FIPS"])
 biobot_counties = set(BiobotDF["STATE_COUNTY_FIPS"])
 nwss_counties = set(NwssDF["STATE_COUNTY_FIPS"])
 
-# Find the union, intersection and missing counties.
+# Find the union, intersection, differences, and missing counties.
 
 biobot_nwss_union = biobot_counties.union(nwss_counties)
 biobot_nwss_intersection = biobot_counties.intersection(nwss_counties)
@@ -98,5 +98,13 @@ print ("\nWriting list of " + str(len(missing_counties)) + " counties not in Bio
 with open(MISSING_COUNTIES_LIST, 'w') as f:
     print(*sorted(missing_counties), file=f, sep="\n")
 
-# TODO output a file that is convient for making a color-coded map of the counties.
+# Create a DF and file that holds info we need to make a map of WBE collection counties.
 
+MapDF = AllCountiesDF
+MapDF["WBE_WHO"] = "none"
+MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_only), "WBE_WHO"] = "biobot"
+MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(nwss_only), "WBE_WHO"] = "nwss"
+MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_nwss_intersection), "WBE_WHO"] = "biobot-nwss"
+
+print ("\nWriting map data to " + FIPS_MAP_DATA)
+MapDF.to_csv(FIPS_MAP_DATA, encoding='utf-8', sep='\t', index=False)
