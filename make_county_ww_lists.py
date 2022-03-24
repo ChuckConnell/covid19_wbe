@@ -105,6 +105,7 @@ MapDF["WBE_WHO"] = "none"
 MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_only), "WBE_WHO"] = "biobot"
 MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(nwss_only), "WBE_WHO"] = "nwss"
 MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_nwss_intersection), "WBE_WHO"] = "biobot-nwss"
-
+MapDF = MapDF.rename(columns={"CountyFIPS":"FIPS"})  # to match Flourish naming
+    
 print ("\nWriting map data to " + FIPS_MAP_DATA)
 MapDF.to_csv(FIPS_MAP_DATA, encoding='utf-8', sep='\t', index=False)
