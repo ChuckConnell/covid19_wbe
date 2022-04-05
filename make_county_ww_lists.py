@@ -12,6 +12,7 @@ USA_COUNTIES_LOCAL = "/Users/chuck/Desktop/COVID Programming/fips2county.tsv"
 COUNTY_POP_LOCAL = "/Users/chuck/Desktop/COVID Programming/US Census/Population_Density_County.csv"
 BIOBOT_LOCAL = "/Users/chuck/Desktop/COVID Programming/Biobot/wastewater_by_county.csv"
 NWSS_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/NWSS_Public_SARS-CoV-2_Wastewater_Metric_Data.tsv"  # i got this manually for now
+SVI_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/DiabetesAtlasData_2018.csv"
 
 BIOBOT_LIST = "biobot_counties.txt"
 NWSS_LIST = "nwss_counties.txt"
@@ -36,6 +37,21 @@ AllCountiesDF = AllCountiesDF.rename(columns={"CountyFIPS":"FIPS"})  # to match 
 CountyPopDF = pd.read_csv(COUNTY_POP_LOCAL, sep=',', header='infer', dtype=str)
 CountyPopDF = CountyPopDF[["GEOID", "B01001_calc_PopDensity"]]
 CountyPopDF = CountyPopDF.rename(columns={"GEOID":"FIPS", "B01001_calc_PopDensity":"DensitySqKm"})  
+
+# SVI from 2018. From https://gis.cdc.gov/grasp/diabetes/DiabetesAtlas.html
+# For info about SVI see https://www.atsdr.cdc.gov/placeandhealth/svi/index.html
+
+SviDF = pd.read_csv(SVI_LOCAL, sep=',', header='infer', dtype=str)
+SviDF = SviDF[["County_FIPS", "Overall SVI"]]
+SviDF = SviDF.rename(columns={"County_FIPS":"FIPS", "Overall SVI":"SVI"})  
+
+# Income
+
+# TODO
+
+# Ethnicity / race 
+
+# TODO
 
 # Get the latest counties covered by Biobot, and tweak as we need it.
 
@@ -120,6 +136,13 @@ MapDF = MapDF.merge(CountyPopDF, how="left", on=["FIPS"])  # add pop density for
 MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(missing_counties), "DensitySqKm"] = ""   # suppress counties with no WBE data 
 MapDF["DensitySqKm"] = pd.to_numeric(MapDF["DensitySqKm"], errors='coerce').round(1)
 MapDF["DensityCategory"] = pd.qcut(MapDF['DensitySqKm'], 3, labels=["low", "med", "high"])
+
+# Add SVI for the counties, but only for counties where we have data.
+
+MapDF = MapDF.merge(SviDF, how="left", on=["FIPS"])  # add pop density for all
+MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(missing_counties), "SVI"] = ""   # suppress counties with no WBE data 
+MapDF["SVI"] = pd.to_numeric(MapDF["SVI"], errors='coerce').round(3)
+MapDF["SviCategory"] = pd.qcut(MapDF["SVI"], 3, labels=["low", "med", "high"])
 
 # Write out the map data fil.
 
