@@ -103,9 +103,9 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 04011	AZ | GREENLEE | 04011	none				
 04012	AZ | LA PAZ | 04012	nwss	1.8	low	0.924	high
 04013	AZ | MARICOPA | 04013	none				
-04015	AZ | MOHAVE | 04015	nwss	6.0	low	0.862	high
+04015	AZ | MOHAVE | 04015	none				
 04017	AZ | NAVAJO | 04017	none				
-04019	AZ | PIMA | 04019	biobot	42.9	med	0.883	high
+04019	AZ | PIMA | 04019	biobot-nwss	42.9	med	0.883	high
 04021	AZ | PINAL | 04021	none				
 04023	AZ | SANTA CRUZ | 04023	none				
 04025	AZ | YAVAPAI | 04025	biobot	10.7	low	0.521	med
@@ -643,7 +643,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 17093	IL | KENDALL | 17093	none				
 17095	IL | KNOX | 17095	nwss	27.5	low	0.646	high
 17097	IL | LAKE | 17097	nwss	611.9	high	0.351	med
-17099	IL | LASALLE | 17099	nwss	37.5	low	0.43	med
+17099	IL | LASALLE | 17099	nwss	37.5	med	0.43	med
 17101	IL | LAWRENCE | 17101	nwss	16.8	low	0.778	high
 17103	IL | LEE | 17103	nwss	18.4	low	0.301	med
 17105	IL | LIVINGSTON | 17105	none				
@@ -774,7 +774,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 18151	IN | STEUBEN | 18151	biobot	43.1	med	0.271	low
 18153	IN | SULLIVAN | 18153	none				
 18155	IN | SWITZERLAND | 18155	none				
-18157	IN | TIPPECANOE | 18157	biobot	146.5	med	0.493	med
+18157	IN | TIPPECANOE | 18157	biobot	146.5	high	0.493	med
 18159	IN | TIPTON | 18159	none				
 18161	IN | UNION | 18161	none				
 18163	IN | VANDERBURGH | 18163	none				
@@ -1047,7 +1047,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 21105	KY | HICKMAN | 21105	none				
 21107	KY | HOPKINS | 21107	none				
 21109	KY | JACKSON | 21109	none				
-21111	KY | JEFFERSON | 21111	biobot	778.1	high	0.568	high
+21111	KY | JEFFERSON | 21111	biobot-nwss	778.1	high	0.568	high
 21113	KY | JESSAMINE | 21113	none				
 21115	KY | JOHNSON | 21115	none				
 21117	KY | KENTON | 21117	biobot	396.7	high	0.338	med
@@ -1176,7 +1176,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 22123	LA | WEST CARROLL PARISH | 22123	none				
 22125	LA | WEST FELICIANA PARISH | 22125	none				
 22127	LA | WINN PARISH | 22127	none				
-23001	ME | ANDROSCOGGIN | 23001	biobot	88.7	med	0.557	high
+23001	ME | ANDROSCOGGIN | 23001	biobot	88.7	med	0.557	med
 23003	ME | AROOSTOOK | 23003	biobot	4.0	low	0.595	high
 23005	ME | CUMBERLAND | 23005	biobot-nwss	134.4	med	0.136	low
 23007	ME | FRANKLIN | 23007	nwss	6.8	low	0.215	low
@@ -1554,8 +1554,8 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 29139	MO | MONTGOMERY | 29139	none				
 29141	MO | MORGAN | 29141	none				
 29143	MO | NEW MADRID | 29143	none				
-29145	MO | NEWTON | 29145	nwss	36.0	low	0.434	med
-29147	MO | NODAWAY | 29147	none				
+29145	MO | NEWTON | 29145	nwss	36.0	med	0.434	med
+29147	MO | NODAWAY | 29147	nwss	9.9	low	0.222	low
 29149	MO | OREGON | 29149	none				
 29151	MO | OSAGE | 29151	none				
 29153	MO | OZARK | 29153	none				
@@ -1581,7 +1581,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 29195	MO | SALINE | 29195	none				
 29197	MO | SCHUYLER | 29197	none				
 29199	MO | SCOTLAND | 29199	none				
-29201	MO | SCOTT | 29201	nwss	35.6	low	0.784	high
+29201	MO | SCOTT | 29201	nwss	35.6	med	0.784	high
 29203	MO | SHANNON | 29203	none				
 29205	MO | SHELBY | 29205	none				
 29207	MO | STODDARD | 29207	nwss	13.8	low	0.464	med
@@ -1653,7 +1653,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 30107	MT | WHEATLAND | 30107	none				
 30109	MT | WIBAUX | 30109	none				
 30111	MT | YELLOWSTONE | 30111	none				
-31001	NE | ADAMS | 31001	none				
+31001	NE | ADAMS | 31001	nwss	21.6	low	0.359	med
 31003	NE | ANTELOPE | 31003	none				
 31005	NE | ARTHUR | 31005	none				
 31007	NE | BANNER | 31007	none				
@@ -1662,7 +1662,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 31013	NE | BOX BUTTE | 31013	none				
 31015	NE | BOYD | 31015	none				
 31017	NE | BROWN | 31017	none				
-31019	NE | BUFFALO | 31019	none				
+31019	NE | BUFFALO | 31019	nwss	19.6	low	0.266	low
 31021	NE | BURT | 31021	none				
 31023	NE | BUTLER | 31023	none				
 31025	NE | CASS | 31025	none				
@@ -1675,12 +1675,12 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 31039	NE | CUMING | 31039	none				
 31041	NE | CUSTER | 31041	none				
 31043	NE | DAKOTA | 31043	none				
-31045	NE | DAWES | 31045	none				
+31045	NE | DAWES | 31045	nwss	2.5	low	0.172	low
 31047	NE | DAWSON | 31047	none				
 31049	NE | DEUEL | 31049	none				
 31051	NE | DIXON | 31051	none				
-31053	NE | DODGE | 31053	none				
-31055	NE | DOUGLAS | 31055	none				
+31053	NE | DODGE | 31053	nwss	26.8	low	0.569	high
+31055	NE | DOUGLAS | 31055	nwss	656.5	high	0.467	med
 31057	NE | DUNDY | 31057	none				
 31059	NE | FILLMORE | 31059	none				
 31061	NE | FRANKLIN | 31061	none				
@@ -1692,7 +1692,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 31073	NE | GOSPER | 31073	none				
 31075	NE | GRANT | 31075	none				
 31077	NE | GREELEY | 31077	none				
-31079	NE | HALL | 31079	none				
+31079	NE | HALL | 31079	nwss	43.3	med	0.67	high
 31081	NE | HAMILTON | 31081	none				
 31083	NE | HARLAN | 31083	none				
 31085	NE | HAYES | 31085	none				
@@ -1707,7 +1707,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 31103	NE | KEYA PAHA | 31103	none				
 31105	NE | KIMBALL | 31105	none				
 31107	NE | KNOX | 31107	none				
-31109	NE | LANCASTER | 31109	none				
+31109	NE | LANCASTER | 31109	nwss	142.9	med	0.302	med
 31111	NE | LINCOLN | 31111	none				
 31113	NE | LOGAN | 31113	none				
 31115	NE | LOUP | 31115	none				
@@ -1723,15 +1723,15 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 31135	NE | PERKINS | 31135	none				
 31137	NE | PHELPS | 31137	none				
 31139	NE | PIERCE | 31139	none				
-31141	NE | PLATTE | 31141	none				
+31141	NE | PLATTE | 31141	nwss	18.9	low	0.299	med
 31143	NE | POLK | 31143	none				
 31145	NE | RED WILLOW | 31145	none				
 31147	NE | RICHARDSON | 31147	none				
 31149	NE | ROCK | 31149	none				
 31151	NE | SALINE | 31151	none				
-31153	NE | SARPY | 31153	none				
+31153	NE | SARPY | 31153	nwss	289.1	high	0.097	low
 31155	NE | SAUNDERS | 31155	none				
-31157	NE | SCOTTS BLUFF | 31157	none				
+31157	NE | SCOTTS BLUFF | 31157	nwss	18.9	low	0.568	high
 31159	NE | SEWARD | 31159	none				
 31161	NE | SHERIDAN | 31161	none				
 31163	NE | SHERMAN | 31163	none				
@@ -1741,8 +1741,8 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 31171	NE | THOMAS | 31171	none				
 31173	NE | THURSTON | 31173	none				
 31175	NE | VALLEY | 31175	none				
-31177	NE | WASHINGTON | 31177	none				
-31179	NE | WAYNE | 31179	none				
+31177	NE | WASHINGTON | 31177	nwss	20.0	low	0.038	low
+31179	NE | WAYNE | 31179	nwss	8.2	low	0.085	low
 31181	NE | WEBSTER | 31181	none				
 31183	NE | WHEELER | 31183	none				
 31185	NE | YORK | 31185	none				
@@ -1827,7 +1827,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 35057	NM | TORRANCE | 35057	none				
 35059	NM | UNION | 35059	none				
 35061	NM | VALENCIA | 35061	none				
-36001	NY | ALBANY | 36001	none				
+36001	NY | ALBANY | 36001	nwss	227.0	high	0.304	med
 36003	NY | ALLEGANY | 36003	none				
 36005	NY | BRONX | 36005	nwss	13202.5	high	0.993	high
 36007	NY | BROOME | 36007	none				
@@ -1838,7 +1838,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 36017	NY | CHENANGO | 36017	nwss	20.9	low	0.565	high
 36019	NY | CLINTON | 36019	none				
 36021	NY | COLUMBIA | 36021	none				
-36023	NY | CORTLAND | 36023	nwss	37.3	low	0.345	med
+36023	NY | CORTLAND | 36023	nwss	37.3	med	0.345	med
 36025	NY | DELAWARE | 36025	nwss	12.2	low	0.633	high
 36027	NY | DUTCHESS | 36027	nwss	142.6	med	0.421	med
 36029	NY | ERIE | 36029	none				
@@ -1849,13 +1849,13 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 36039	NY | GREENE | 36039	none				
 36041	NY | HAMILTON | 36041	none				
 36043	NY | HERKIMER | 36043	nwss	17.1	low	0.532	med
-36045	NY | JEFFERSON | 36045	nwss	34.8	low	0.648	high
+36045	NY | JEFFERSON | 36045	nwss	34.8	med	0.648	high
 36047	NY | KINGS | 36047	nwss	14475.0	high	0.815	high
 36049	NY | LEWIS | 36049	none				
 36051	NY | LIVINGSTON | 36051	nwss	39.1	med	0.342	med
 36053	NY | MADISON | 36053	nwss	42.1	med	0.167	low
 36055	NY | MONROE | 36055	nwss	437.5	high	0.52	med
-36057	NY | MONTGOMERY | 36057	none				
+36057	NY | MONTGOMERY | 36057	nwss	47.3	med	0.831	high
 36059	NY | NASSAU | 36059	biobot-nwss	1840.4	high	0.243	low
 36061	NY | NEW YORK | 36061	nwss	27819.8	high	0.551	med
 36063	NY | NIAGARA | 36063	nwss	156.5	high	0.332	med
@@ -1883,12 +1883,12 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 36107	NY | TIOGA | 36107	none				
 36109	NY | TOMPKINS | 36109	nwss	83.8	med	0.346	med
 36111	NY | ULSTER | 36111	nwss	61.6	med	0.47	med
-36113	NY | WARREN | 36113	none				
+36113	NY | WARREN | 36113	nwss	28.7	low	0.174	low
 36115	NY | WASHINGTON | 36115	none				
 36117	NY | WAYNE | 36117	none				
 36119	NY | WESTCHESTER | 36119	none				
 36121	NY | WYOMING | 36121	none				
-36123	NY | YATES | 36123	none				
+36123	NY | YATES | 36123	nwss	28.6	low	0.439	med
 37001	NC | ALAMANCE | 37001	none				
 37003	NC | ALEXANDER | 37003	none				
 37005	NC | ALLEGHANY | 37005	none				
@@ -1956,7 +1956,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 37129	NC | NEW HANOVER | 37129	nwss	450.4	high	0.377	med
 37131	NC | NORTHAMPTON | 37131	nwss	14.5	low	0.902	high
 37133	NC | ONSLOW | 37133	none				
-37135	NC | ORANGE | 37135	nwss	138.8	med	0.296	med
+37135	NC | ORANGE | 37135	nwss	138.8	med	0.296	low
 37137	NC | PAMLICO | 37137	none				
 37139	NC | PASQUOTANK | 37139	nwss	67.2	med	0.775	high
 37141	NC | PENDER | 37141	none				
@@ -2061,9 +2061,9 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 39033	OH | CRAWFORD | 39033	nwss	40.4	med	0.319	med
 39035	OH | CUYAHOGA | 39035	nwss	1058.8	high	0.681	high
 39037	OH | DARKE | 39037	nwss	33.4	low	0.135	low
-39039	OH | DEFIANCE | 39039	nwss	35.9	low	0.217	low
+39039	OH | DEFIANCE | 39039	nwss	35.9	med	0.217	low
 39041	OH | DELAWARE | 39041	none				
-39043	OH | ERIE | 39043	nwss	115.4	med	0.291	med
+39043	OH | ERIE | 39043	nwss	115.4	med	0.291	low
 39045	OH | FAIRFIELD | 39045	nwss	117.0	med	0.235	low
 39047	OH | FAYETTE | 39047	nwss	27.2	low	0.502	med
 39049	OH | FRANKLIN | 39049	nwss	924.9	high	0.512	med
@@ -2083,7 +2083,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 39077	OH | HURON | 39077	nwss	45.9	med	0.432	med
 39079	OH | JACKSON | 39079	none				
 39081	OH | JEFFERSON | 39081	nwss	63.3	med	0.549	med
-39083	OH | KNOX | 39083	nwss	45.0	med	0.294	med
+39083	OH | KNOX | 39083	nwss	45.0	med	0.294	low
 39085	OH | LAKE | 39085	none				
 39087	OH | LAWRENCE | 39087	nwss	51.6	med	0.558	high
 39089	OH | LICKING | 39089	nwss	97.5	med	0.229	low
@@ -2109,7 +2109,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 39129	OH | PICKAWAY | 39129	nwss	44.2	med	0.282	low
 39131	OH | PIKE | 39131	none				
 39133	OH | PORTAGE | 39133	nwss	128.8	med	0.246	low
-39135	OH | PREBLE | 39135	nwss	37.5	low	0.169	low
+39135	OH | PREBLE | 39135	nwss	37.5	med	0.169	low
 39137	OH | PUTNAM | 39137	none				
 39139	OH | RICHLAND | 39139	nwss	94.6	med	0.617	high
 39141	OH | ROSS | 39141	none				
@@ -2125,7 +2125,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 39161	OH | VAN WERT | 39161	none				
 39163	OH | VINTON | 39163	none				
 39165	OH | WARREN | 39165	none				
-39167	OH | WASHINGTON | 39167	nwss	37.1	low	0.35	med
+39167	OH | WASHINGTON | 39167	nwss	37.1	med	0.35	med
 39169	OH | WAYNE | 39169	nwss	80.9	med	0.479	med
 39171	OH | WILLIAMS | 39171	nwss	33.9	low	0.269	low
 39173	OH | WOOD | 39173	nwss	81.3	med	0.166	low
@@ -2207,42 +2207,42 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 40149	OK | WASHITA | 40149	none				
 40151	OK | WOODS | 40151	none				
 40153	OK | WOODWARD | 40153	none				
-41001	OR | BAKER | 41001	none				
-41003	OR | BENTON | 41003	none				
+41001	OR | BAKER | 41001	nwss	2.0	low	0.685	high
+41003	OR | BENTON | 41003	nwss	51.3	med	0.349	med
 41005	OR | CLACKAMAS | 41005	nwss	83.8	med	0.19	low
-41007	OR | CLATSOP | 41007	none				
-41009	OR | COLUMBIA | 41009	none				
-41011	OR | COOS | 41011	none				
+41007	OR | CLATSOP | 41007	nwss	18.0	low	0.518	med
+41009	OR | COLUMBIA | 41009	nwss	29.8	low	0.402	med
+41011	OR | COOS | 41011	nwss	15.3	low	0.743	high
 41013	OR | CROOK | 41013	none				
 41015	OR | CURRY | 41015	none				
-41017	OR | DESCHUTES | 41017	biobot	23.1	low	0.164	low
+41017	OR | DESCHUTES | 41017	biobot-nwss	23.1	low	0.164	low
 41019	OR | DOUGLAS | 41019	none				
 41021	OR | GILLIAM | 41021	none				
 41023	OR | GRANT | 41023	none				
 41025	OR | HARNEY | 41025	none				
-41027	OR | HOOD RIVER | 41027	none				
-41029	OR | JACKSON | 41029	biobot	29.7	low	0.735	high
-41031	OR | JEFFERSON | 41031	none				
-41033	OR | JOSEPHINE | 41033	none				
-41035	OR | KLAMATH | 41035	none				
+41027	OR | HOOD RIVER | 41027	nwss	17.1	low	0.546	med
+41029	OR | JACKSON | 41029	biobot-nwss	29.7	low	0.735	high
+41031	OR | JEFFERSON | 41031	nwss	5.0	low	0.912	high
+41033	OR | JOSEPHINE | 41033	nwss	20.1	low	0.656	high
+41035	OR | KLAMATH | 41035	nwss	4.3	low	0.869	high
 41037	OR | LAKE | 41037	none				
-41039	OR | LANE | 41039	none				
-41041	OR | LINCOLN | 41041	none				
-41043	OR | LINN | 41043	none				
-41045	OR | MALHEUR | 41045	none				
-41047	OR | MARION | 41047	none				
+41039	OR | LANE | 41039	nwss	31.3	low	0.649	high
+41041	OR | LINCOLN | 41041	nwss	18.9	low	0.552	med
+41043	OR | LINN | 41043	nwss	20.7	low	0.679	high
+41045	OR | MALHEUR | 41045	nwss	1.2	low	0.996	high
+41047	OR | MARION | 41047	nwss	109.7	med	0.854	high
 41049	OR | MORROW | 41049	none				
-41051	OR | MULTNOMAH | 41051	biobot	715.3	high	0.468	med
-41053	OR | POLK | 41053	none				
+41051	OR | MULTNOMAH | 41051	biobot-nwss	715.3	high	0.468	med
+41053	OR | POLK | 41053	nwss	42.4	med	0.578	high
 41055	OR | SHERMAN | 41055	none				
 41057	OR | TILLAMOOK | 41057	none				
-41059	OR | UMATILLA | 41059	none				
+41059	OR | UMATILLA | 41059	nwss	9.2	low	0.969	high
 41061	OR | UNION | 41061	none				
 41063	OR | WALLOWA | 41063	none				
 41065	OR | WASCO | 41065	none				
-41067	OR | WASHINGTON | 41067	none				
+41067	OR | WASHINGTON | 41067	nwss	310.2	high	0.319	med
 41069	OR | WHEELER | 41069	none				
-41071	OR | YAMHILL | 41071	biobot	56.0	med	0.661	high
+41071	OR | YAMHILL | 41071	biobot-nwss	56.0	med	0.661	high
 42001	PA | ADAMS | 42001	none				
 42003	PA | ALLEGHENY | 42003	none				
 42005	PA | ARMSTRONG | 42005	none				
@@ -2310,11 +2310,11 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 42129	PA | WESTMORELAND | 42129	biobot	133.2	med	0.138	low
 42131	PA | WYOMING | 42131	none				
 42133	PA | YORK | 42133	none				
-44001	RI | BRISTOL | 44001	none				
+44001	RI | BRISTOL | 44001	nwss	782.2	high	0.124	low
 44003	RI | KENT | 44003	nwss	375.3	high	0.152	low
 44005	RI | NEWPORT | 44005	none				
 44007	RI | PROVIDENCE | 44007	biobot-nwss	598.3	high	0.759	high
-44009	RI | WASHINGTON | 44009	biobot	148.0	med	0.089	low
+44009	RI | WASHINGTON | 44009	biobot	148.0	high	0.089	low
 45001	SC | ABBEVILLE | 45001	none				
 45003	SC | AIKEN | 45003	none				
 45005	SC | ALLENDALE | 45005	none				
@@ -2360,7 +2360,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 45085	SC | SUMTER | 45085	none				
 45087	SC | UNION | 45087	none				
 45089	SC | WILLIAMSBURG | 45089	none				
-45091	SC | YORK | 45091	nwss	146.7	med	0.366	med
+45091	SC | YORK | 45091	nwss	146.7	high	0.366	med
 46003	SD | AURORA | 46003	none				
 46005	SD | BEADLE | 46005	nwss	5.6	low	0.651	high
 46007	SD | BENNETT | 46007	none				
@@ -2878,7 +2878,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 51115	VA | MATHEWS | 51115	nwss	39.5	med	0.021	low
 51117	VA | MECKLENBURG | 51117	none				
 51119	VA | MIDDLESEX | 51119	none				
-51121	VA | MONTGOMERY | 51121	nwss	97.8	med	0.296	med
+51121	VA | MONTGOMERY | 51121	nwss	97.8	med	0.296	low
 51125	VA | NELSON | 51125	none				
 51127	VA | NEW KENT | 51127	nwss	38.8	med	0.006	low
 51131	VA | NORTHAMPTON | 51131	none				
@@ -2895,9 +2895,9 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 51155	VA | PULASKI | 51155	biobot-nwss	41.3	med	0.483	med
 51157	VA | RAPPAHANNOCK | 51157	none				
 51159	VA | RICHMOND | 51159	none				
-51161	VA | ROANOKE | 51161	nwss	144.2	med	0.131	low
+51161	VA | ROANOKE | 51161	nwss	144.2	high	0.131	low
 51163	VA | ROCKBRIDGE | 51163	none				
-51165	VA | ROCKINGHAM | 51165	nwss	36.1	low	0.32	med
+51165	VA | ROCKINGHAM | 51165	nwss	36.1	med	0.32	med
 51167	VA | RUSSELL | 51167	none				
 51169	VA | SCOTT | 51169	none				
 51171	VA | SHENANDOAH | 51171	none				
@@ -2909,9 +2909,9 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 51183	VA | SUSSEX | 51183	none				
 51185	VA | TAZEWELL | 51185	none				
 51187	VA | WARREN | 51187	none				
-51191	VA | WASHINGTON | 51191	nwss	37.4	low	0.365	med
+51191	VA | WASHINGTON | 51191	nwss	37.4	med	0.365	med
 51193	VA | WESTMORELAND | 51193	none				
-51195	VA | WISE | 51195	nwss	37.3	low	0.86	high
+51195	VA | WISE | 51195	nwss	37.3	med	0.86	high
 51197	VA | WYTHE | 51197	none				
 51199	VA | YORK | 51199	nwss	249.5	high	0.2	low
 51510	VA | ALEXANDRIA CITY | 51510	biobot-nwss	4046.5	high	0.2	low
@@ -2982,7 +2982,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 53055	WA | SAN JUAN | 53055	none				
 53057	WA | SKAGIT | 53057	biobot	27.7	low	0.538	med
 53059	WA | SKAMANIA | 53059	none				
-53061	WA | SNOHOMISH | 53061	nwss	145.6	med	0.276	low
+53061	WA | SNOHOMISH | 53061	nwss	145.6	high	0.276	low
 53063	WA | SPOKANE | 53063	nwss	109.0	med	0.482	med
 53065	WA | STEVENS | 53065	none				
 53067	WA | THURSTON | 53067	none				
@@ -2995,8 +2995,8 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 54003	WV | BERKELEY | 54003	none				
 54005	WV | BOONE | 54005	none				
 54007	WV | BRAXTON | 54007	none				
-54009	WV | BROOKE | 54009	none				
-54011	WV | CABELL | 54011	nwss	131.0	med	0.624	high
+54009	WV | BROOKE | 54009	nwss	98.6	med	0.331	med
+54011	WV | CABELL | 54011	none				
 54013	WV | CALHOUN | 54013	none				
 54015	WV | CLAY | 54015	none				
 54017	WV | DODDRIDGE | 54017	none				
@@ -3040,7 +3040,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 54093	WV | TUCKER | 54093	none				
 54095	WV | TYLER | 54095	none				
 54097	WV | UPSHUR | 54097	none				
-54099	WV | WAYNE | 54099	nwss	31.1	low	0.601	high
+54099	WV | WAYNE | 54099	none				
 54101	WV | WEBSTER | 54101	none				
 54103	WV | WETZEL | 54103	none				
 54105	WV | WIRT | 54105	none				
@@ -3091,7 +3091,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 55083	WI | OCONTO | 55083	none				
 55085	WI | ONEIDA | 55085	nwss	12.3	low	0.014	low
 55087	WI | OUTAGAMIE | 55087	nwss	111.9	med	0.098	low
-55089	WI | OZAUKEE | 55089	nwss	146.3	med	0.013	low
+55089	WI | OZAUKEE | 55089	nwss	146.3	high	0.013	low
 55091	WI | PEPIN | 55091	none				
 55093	WI | PIERCE | 55093	nwss	28.0	low	0.081	low
 55095	WI | POLK | 55095	none				
@@ -3117,7 +3117,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 55135	WI | WAUPACA | 55135	nwss	26.6	low	0.182	low
 55137	WI | WAUSHARA | 55137	nwss	14.9	low	0.365	med
 55139	WI | WINNEBAGO | 55139	nwss	150.9	high	0.161	low
-55141	WI | WOOD | 55141	nwss	35.7	low	0.154	low
+55141	WI | WOOD | 55141	nwss	35.7	med	0.154	low
 56001	WY | ALBANY | 56001	none				
 56003	WY | BIG HORN | 56003	none				
 56005	WY | CAMPBELL | 56005	none				
