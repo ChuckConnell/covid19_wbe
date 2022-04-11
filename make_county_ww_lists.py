@@ -1,6 +1,9 @@
 
 # Compare the counties covered by the COVID-19 wastewater analysis from Biobot and USA CDC NWSS and make lists of the results.
-# Put the counties in "STATE + COUNTY_NAME + FIPS" format so they are readable.
+# Put the counties in "STATE | COUNTY_NAME | FIPS" format so they are readable.
+
+# Output a file that can be used as input to a map of the US, showing the results.
+# Add various other information about the counties which might be useful to map viewers.
 
 import pandas as pd 
 from urllib import request
@@ -130,21 +133,21 @@ MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_only), "WBE_WHO"] = "biobot"
 MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(nwss_only), "WBE_WHO"] = "nwss"
 MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_nwss_intersection), "WBE_WHO"] = "biobot-nwss"
     
-# Add population density in the counties, but only for counties where we have data.
+# Add population density in the counties
 
 MapDF = MapDF.merge(CountyPopDF, how="left", on=["FIPS"])  # add pop density for all
-MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(missing_counties), "DensitySqKm"] = ""   # suppress counties with no WBE data 
+#MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(missing_counties), "DensitySqKm"] = ""   # suppress counties with no WBE data 
 MapDF["DensitySqKm"] = pd.to_numeric(MapDF["DensitySqKm"], errors='coerce').round(1)
 MapDF["DensityCategory"] = pd.qcut(MapDF['DensitySqKm'], 3, labels=["low", "med", "high"])
 
-# Add SVI for the counties, but only for counties where we have data.
+# Add SVI for the counties
 
 MapDF = MapDF.merge(SviDF, how="left", on=["FIPS"])  # add pop density for all
-MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(missing_counties), "SVI"] = ""   # suppress counties with no WBE data 
+#MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(missing_counties), "SVI"] = ""   # suppress counties with no WBE data 
 MapDF["SVI"] = pd.to_numeric(MapDF["SVI"], errors='coerce').round(3)
 MapDF["SviCategory"] = pd.qcut(MapDF["SVI"], 3, labels=["low", "med", "high"])
 
-# Write out the map data fil.
+# Write out the map data file.
 
 print ("\nWriting map data to " + FIPS_MAP_DATA)
 MapDF.to_csv(FIPS_MAP_DATA, encoding='utf-8', sep='\t', index=False)
