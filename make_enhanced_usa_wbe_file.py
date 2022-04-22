@@ -44,13 +44,13 @@ CovidDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
 path = "~/Desktop/COVID Programming/US Census/co-est2020.csv"
 PopDF = pd.read_csv(path, sep=',', header='infer', dtype=str, encoding='latin-1')
 
-# Make a few changes to the covid facts file.
+# In the "Covid facts file" clarify some column names.
                                                             
 CovidDF = CovidDF.rename(columns={"metrics.caseDensity":"metrics.caseDensity100k", "date":"covid_facts_date"})
 CovidDF["covid_facts_date"] = pd.to_datetime(CovidDF["covid_facts_date"], errors='coerce')
 
 # Add a rolling average for some key hospitalization info. It is only reported weekly, so there are many empty days now.
-# The goal is to fill in the missing days with reasonable numbers, so when we look up those dates, there is something there.
+# The goal is to fill in the missing days with reasonable numbers, so downstream there is something there.
 
 CovidDF = CovidDF.sort_values(["fips", "covid_facts_date"], ascending=[True, True])
 CovidDF["metrics.icuCapacityRatioRolling10"] = CovidDF["metrics.icuCapacityRatio"].rolling(10, min_periods=1, center=True, closed='both').mean()
@@ -59,7 +59,19 @@ CovidDF["metrics.weeklyCovidAdmissionsPer100kRolling10"] = CovidDF["metrics.week
 
 # Add a rolling average for daily deaths.
 
-CovidDF["actuals.newDeathsRolling7"] = CovidDF["actuals.newDeaths"].rolling(7, min_periods=1, center=True, closed='both').mean()
+CovidDF = CovidDF.sort_values(["fips", "covid_facts_date"], ascending=[True, True])
+CovidDF["metrics.newDeathsRolling7"] = CovidDF["actuals.newDeaths"].rolling(7, min_periods=1, center=True, closed='both').mean()
+
+# All vax numbers in USA before 2020-12-13 (date of first vax jab) are zero even if they are missing in the CovidActNow file. Downstream we want a zero, not NAN.
+# All "addditional dose" numbers before 2021-08-15 are zero.
+
+CovidDF.loc[CovidDF["covid_facts_date"] <= "2020-12-13", "actuals.vaccinationsInitiated"] = 0.0
+CovidDF.loc[CovidDF["covid_facts_date"] <= "2020-12-13", "actuals.vaccinationsCompleted"] = 0.0
+CovidDF.loc[CovidDF["covid_facts_date"] <= "2020-12-13", "metrics.vaccinationsInitiatedRatio"] = 0.0
+CovidDF.loc[CovidDF["covid_facts_date"] <= "2020-12-13", "metrics.vaccinationsCompletedRatio"] = 0.0
+
+CovidDF.loc[CovidDF["covid_facts_date"] <= "2021-08-15", "actuals.vaccinationsAdditionalDose"] = 0.0
+CovidDF.loc[CovidDF["covid_facts_date"] <= "2021-08-15", "metrics.vaccinationsAdditionalDoseRatio"] = 0.0
 
 # testDF = CovidDF.query("fips == '25025' or fips == '09001' ")  # debugging
 
@@ -145,7 +157,7 @@ AnalyticDF = AnalyticDF.drop(columns=["covid_facts_date", "fips"])
 
 # Add hospitialization facts to the water files.
 
-HospDF = CovidDF[["covid_facts_date", "fips", "actuals.hospitalBeds.capacity", "actuals.icuBeds.capacity", "actuals.hospitalBeds.currentUsageCovid", "actuals.icuBeds.currentUsageCovid", "metrics.icuCapacityRatio", "metrics.bedsWithCovidPatientsRatio" , "metrics.bedsWithCovidPatientsRatioRolling10" ,"metrics.weeklyCovidAdmissionsPer100k" , "metrics.weeklyCovidAdmissionsPer100kRolling10" ]]
+HospDF = CovidDF[["covid_facts_date", "fips", "actuals.hospitalBeds.capacity", "actuals.icuBeds.capacity", "actuals.hospitalBeds.currentUsageCovid", "actuals.icuBeds.currentUsageCovid", "metrics.icuCapacityRatio", "metrics.bedsWithCovidPatientsRatio" , "metrics.bedsWithCovidPatientsRatioRolling10" ,"metrics.weeklyCovidAdmissionsPer100k" , "metrics.weeklyCovidAdmissionsPer100kRolling10", "metrics.icuCapacityRatioRolling10" ]]
 
 RawDF = RawDF.merge(HospDF, how='left', left_on=["hosp_date", "CountyFIPS"], right_on=["covid_facts_date", "fips"])
 RawDF = RawDF.drop(columns=["covid_facts_date", "fips"])
@@ -155,7 +167,7 @@ AnalyticDF = AnalyticDF.drop(columns=["covid_facts_date", "fips"])
 
 # Add mortality info
 
-DeathsDF = CovidDF[["covid_facts_date", "fips", "actuals.newDeaths", "actuals.newDeathsRolling7"]]
+DeathsDF = CovidDF[["covid_facts_date", "fips", "actuals.newDeaths", "metrics.newDeathsRolling7"]]
 
 RawDF = RawDF.merge(DeathsDF, how='left', left_on=["deaths_date", "CountyFIPS"], right_on=["covid_facts_date", "fips"])
 RawDF = RawDF.drop(columns=["covid_facts_date", "fips"])
