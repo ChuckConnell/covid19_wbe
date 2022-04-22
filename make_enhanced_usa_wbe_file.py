@@ -15,6 +15,7 @@ RAW_OUTPUT_SAMPLE = "NwssRawEnhancedSample.tsv"
 ANALYTIC_OUTPUT_SAMPLE = "NwssAnalyticEnhancedSample.tsv"
 SAMPLE_SIZE = 1000
 
+# TODO Get a fresh NWSS update. This is 2 months old.
 
 # Wastewater samples raw data and analytics data. Acquired by restricted download from CDC, after signing data-use agreement.
 
@@ -26,10 +27,18 @@ AnalyticDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
 
 # Covid facts per county from https://apidocs.covidactnow.org. You need an API key, which they give to anyone who asks.
 
-path = "~/Desktop/COVID Programming/Covid Act Now/counties.timeseries-16feb2022.csv"
+path = "~/Desktop/COVID Programming/Covid Act Now/counties.timeseries.20apr2022.csv"
 CovidDF = pd.read_csv(path, sep=',', header='infer', dtype=str)
 
-# Population by county. 
+# BostonDF = CovidDF.query("fips =='25025' ")   # debugging
+
+# The CovidActNow data seems pretty good. But it is a secondary source, so we have to trust that it is compiled correctly.
+# If we want to skip that and go back upstream, we could replace CovidActNow with these sources...
+# Vax  https://data.cdc.gov/Vaccinations/COVID-19-Vaccinations-in-the-United-States-County/8xkx-amqh
+# Hospitalizations  https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/anag-cw7u
+# Deaths, also secondary but looks good, https://github.com/nytimes/covid-19-data/blob/master/us-counties.csv
+
+# Population by county
 # From https://www.census.gov/programs-surveys/popest/technical-documentation/research/evaluation-estimates/2020-evaluation-estimates/2010s-counties-total.html  
 
 path = "~/Desktop/COVID Programming/US Census/co-est2020.csv"
@@ -40,11 +49,27 @@ PopDF = pd.read_csv(path, sep=',', header='infer', dtype=str, encoding='latin-1'
 CovidDF = CovidDF.rename(columns={"metrics.caseDensity":"metrics.caseDensity100k", "date":"covid_facts_date"})
 CovidDF["covid_facts_date"] = pd.to_datetime(CovidDF["covid_facts_date"], errors='coerce')
 
+# Add a rolling average for some key hospitalization info. It is only reported weekly, so there are many empty days now.
+# The goal is to fill in the missing days with reasonable numbers, so when we look up those dates, there is something there.
+
+CovidDF = CovidDF.sort_values(["fips", "covid_facts_date"], ascending=[True, True])
+CovidDF["metrics.icuCapacityRatioRolling10"] = CovidDF["metrics.icuCapacityRatio"].rolling(10, min_periods=1, center=True, closed='both').mean()
+CovidDF["metrics.bedsWithCovidPatientsRatioRolling10"] = CovidDF["metrics.bedsWithCovidPatientsRatio"].rolling(10, min_periods=1, center=True, closed='both').mean()
+CovidDF["metrics.weeklyCovidAdmissionsPer100kRolling10"] = CovidDF["metrics.weeklyCovidAdmissionsPer100k"].rolling(10, min_periods=1, center=True, closed='both').mean()
+
+# Add a rolling average for daily deaths.
+
+CovidDF["actuals.newDeathsRolling7"] = CovidDF["actuals.newDeaths"].rolling(7, min_periods=1, center=True, closed='both').mean()
+
+# testDF = CovidDF.query("fips == '25025' or fips == '09001' ")  # debugging
+
 # Make a few changes to the raw wastewater samples file.
 
 RawDF = RawDF.rename(columns={"county_names": "CountyFIPS", "population_served": "sewershed_population_served"})
 
 RawDF["sample_collect_date"] = pd.to_datetime(RawDF["sample_collect_date"], errors='coerce')
+RawDF = RawDF[RawDF["sample_collect_date"].notna()]   # get rid of bad/missing sample dates
+
 RawDF["sewershed_population_served"] = pd.to_numeric(RawDF["sewershed_population_served"], errors='coerce').fillna(0).astype(int)
 
 RawDF["CountyFIPS"] = RawDF["CountyFIPS"].str.split(",")    # change comma separate string to array
@@ -58,6 +83,8 @@ AnalyticDF = AnalyticDF[AnalyticDF["sample_id"].str.strip().str.len() > 0]   # I
 AnalyticDF = AnalyticDF.rename(columns={"county_names": "CountyFIPS", "date": "sample_collect_date", "population_served": "sewershed_population_served"})
 
 AnalyticDF["sample_collect_date"] = pd.to_datetime(AnalyticDF["sample_collect_date"], errors='coerce')
+AnalyticDF = AnalyticDF[AnalyticDF["sample_collect_date"].notna()]   # get rid of bad/missing sample dates
+
 AnalyticDF["sewershed_population_served"] = pd.to_numeric(AnalyticDF["sewershed_population_served"], errors='coerce').fillna(0).astype(int)
 
 AnalyticDF["CountyFIPS"] = AnalyticDF["CountyFIPS"].str.split(",")   # one county per row
@@ -116,9 +143,9 @@ RawDF = RawDF.drop(columns=["covid_facts_date", "fips"])
 AnalyticDF = AnalyticDF.merge(CasesDF, how='left', left_on=["cases_date", "CountyFIPS"], right_on=["covid_facts_date", "fips"])
 AnalyticDF = AnalyticDF.drop(columns=["covid_facts_date", "fips"])
 
-# Add hospitialization facts to the sample file.
+# Add hospitialization facts to the water files.
 
-HospDF = CovidDF[["covid_facts_date", "fips", "actuals.hospitalBeds.capacity", "actuals.icuBeds.capacity", "actuals.hospitalBeds.currentUsageCovid", "actuals.icuBeds.currentUsageCovid"]]
+HospDF = CovidDF[["covid_facts_date", "fips", "actuals.hospitalBeds.capacity", "actuals.icuBeds.capacity", "actuals.hospitalBeds.currentUsageCovid", "actuals.icuBeds.currentUsageCovid", "metrics.icuCapacityRatio", "metrics.bedsWithCovidPatientsRatio" , "metrics.bedsWithCovidPatientsRatioRolling10" ,"metrics.weeklyCovidAdmissionsPer100k" , "metrics.weeklyCovidAdmissionsPer100kRolling10" ]]
 
 RawDF = RawDF.merge(HospDF, how='left', left_on=["hosp_date", "CountyFIPS"], right_on=["covid_facts_date", "fips"])
 RawDF = RawDF.drop(columns=["covid_facts_date", "fips"])
@@ -128,7 +155,7 @@ AnalyticDF = AnalyticDF.drop(columns=["covid_facts_date", "fips"])
 
 # Add mortality info
 
-DeathsDF = CovidDF[["covid_facts_date", "fips", "actuals.newDeaths"]]
+DeathsDF = CovidDF[["covid_facts_date", "fips", "actuals.newDeaths", "actuals.newDeathsRolling7"]]
 
 RawDF = RawDF.merge(DeathsDF, how='left', left_on=["deaths_date", "CountyFIPS"], right_on=["covid_facts_date", "fips"])
 RawDF = RawDF.drop(columns=["covid_facts_date", "fips"])
