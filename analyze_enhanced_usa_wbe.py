@@ -4,6 +4,7 @@
 import pandas as pd 
 
 ENHANCED_RAW_FILE = "~/Desktop/COVID Programming/NwssRawEnhanced.tsv"
+RNA_TOP_COMPRESSION = 0.90  # consider any RNA signal above this quantile as 100%
 
 # Open the file.
 
@@ -75,6 +76,8 @@ print ()
 print (RawDF["metrics.vaccinationsInitiatedRatio"].describe())
 print ()
 print (RawDF["metrics.vaccinationsCompletedRatio"].describe())
+print ()
+print (RawDF["metrics.vaccinationsAdditionalDoseRatio"].describe())
 
 print ()
 print (RawDF["metrics.icuCapacityRatioRolling10"].describe())
@@ -88,12 +91,32 @@ print (RawDF["metrics.newDeathsRolling7"].describe())
 print ()
 print (RawDF["metrics.newDeathsRolling7per100k"].describe())
 
+# Create a new metric UPR that is "unvaccinated percent + RNA signal percent" The max value will be 200.
+# The hypothesis is that UPR predicts hospitalization and death.
 
+# First find the percent not vaxed, so we invert the vax ratio.
 
-#RawDF["not_one_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsInitiatedRatio"]) * 100 
-#RawDF["not_full_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsCompletedRatio"]) * 100 
-#RawDF["not_boost_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsAdditionalDoseRatio"]) * 100 
+RawDF["not_one_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsInitiatedRatio"]) * 100 
+RawDF["not_full_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsCompletedRatio"]) * 100 
+RawDF["not_boost_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsAdditionalDoseRatio"]) * 100 
 
+print ()
+print (RawDF["not_one_vax_pct"].describe())
+print ()
+print (RawDF["not_full_vax_pct"].describe())
+print ()
+print (RawDF["not_boost_vax_pct"].describe())
+
+# Normalize the RNA signal so that it is out of 100. This requires compressing all the very high signals to 100.
+
+top_rna = RawDF["pcr_target_avg_conc_norm"].quantile(RNA_TOP_COMPRESSION)
+print ("\nSetting all RNA signals above", top_rna, "to 100%. This is the", RNA_TOP_COMPRESSION, "quantile.")
+
+RawDF["rna_signal_pct"] = (RawDF["pcr_target_avg_conc_norm"] / top_rna) * 100
+RawDF.loc[RawDF["rna_signal_pct"] > 100, "rna_signal_pct"] = 100
+
+print ()
+print (RawDF["rna_signal_pct"].describe())
 
 # Look at the results of vax+RNA. We make a special dataframe for this.
 
