@@ -118,28 +118,21 @@ RawDF.loc[RawDF["rna_signal_pct"] > 100, "rna_signal_pct"] = 100
 print ()
 print (RawDF["rna_signal_pct"].describe())
 
-# Look at the results of vax+RNA. We make a special dataframe for this.
+# Make the UPR metrics -- Unvaxed Plus Rna
 
-#VaxRnaDF = RawDF[RawDF["metrics.vaccinationsInitiatedRatio"].notna()]  
-#VaxRnaDF = VaxRnaDF[VaxRnaDF["metrics.vaccinationsCompletedRatio"].notna()]  
-#RawDF = RawDF[RawDF["metrics.vaccinationsAdditionalDoseRatio"].notna()]   # many values missing here
+RawDF["UPR_one_vax"] = (RawDF["not_one_vax_pct"] + RawDF["rna_signal_pct"]).round(2)
+print ()
+print (RawDF["UPR_one_vax"].describe())
 
-#print("\nRows in Vax+RNA DF: " + str(VaxRnaDF.shape[0]))
+RawDF["UPR_full_vax"] = (RawDF["not_full_vax_pct"] + RawDF["rna_signal_pct"]).round(2)
+print ()
+print (RawDF["UPR_full_vax"].describe())
 
-# Create soem new vax columns 
+RawDF["UPR_boost_vax"] = (RawDF["not_boost_vax_pct"] + RawDF["rna_signal_pct"]).round(2)
+print ()
+print (RawDF["UPR_boost_vax"].describe())
 
-#RawDF["not_one_vax_pct"] = (RawDF["metrics.vaccinationsInitiatedRatio"] - 1.0) * 100 
-#RawDF["not_full_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsCompletedRatio"]) * 100 
-#RawDF["not_boost_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsAdditionalDoseRatio"]) * 100 
 
-'''
-rna_std = 
-rna_pct = 
-
-not_one_vax_plus_rna = 200 max
-not_full_vax_plus_rna = 200 max
-not_boost_vax_plus_rna = 200 max
-'''
 
 
 '''
