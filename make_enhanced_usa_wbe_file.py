@@ -107,18 +107,18 @@ AnalyticDF["CountyFIPS"] = AnalyticDF["CountyFIPS"].str.strip("[]' ")
 
 PopDF = PopDF.rename(columns={"STATE":"StateFIPS", "COUNTY":"CountyFIPS-3", "POPESTIMATE2020":"COUNTY_POPESTIMATE2020"})  
 PopDF["CountyFIPS"] = PopDF["StateFIPS"] + PopDF["CountyFIPS-3"]  # make full 5-digit county FIPS
-PopDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(PopDF["COUNTY_POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+PopDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(PopDF["COUNTY_POPESTIMATE2020"], errors='coerce')
+PopDF = PopDF[PopDF["COUNTY_POPESTIMATE2020"].notna()]   # throw out bad rows
 PopDF = PopDF[["CountyFIPS", "COUNTY_POPESTIMATE2020"]]  # just the fields we need
-PopDF = PopDF[PopDF.COUNTY_POPESTIMATE2020 > 0]     # throw out bad data
 
 # Add county population to each sample row. 
 # Numbers get changed to float during merge, so fix back to integer.
 
 RawDF = RawDF.merge(PopDF, how='left', on="CountyFIPS")
-RawDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(RawDF["COUNTY_POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+RawDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(RawDF["COUNTY_POPESTIMATE2020"], errors='coerce')
 
 AnalyticDF = AnalyticDF.merge(PopDF, how='left', on="CountyFIPS")
-AnalyticDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(AnalyticDF["COUNTY_POPESTIMATE2020"], errors='coerce').fillna(0).astype(int)
+AnalyticDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(AnalyticDF["COUNTY_POPESTIMATE2020"], errors='coerce')
 
 # Create some additional date columns on the sample files. These will be used to add the 
 # look ahead / look back info.

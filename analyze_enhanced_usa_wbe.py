@@ -24,19 +24,19 @@ RawDF["metrics.caseDensity100k"] = pd.to_numeric(RawDF["metrics.caseDensity100k"
 RawDF["metrics.infectionRate"] = pd.to_numeric(RawDF["metrics.infectionRate"], errors='coerce')
 RawDF["metrics.testPositivityRatio"] = pd.to_numeric(RawDF["metrics.testPositivityRatio"], errors='coerce')
 
-RawDF["actuals.hospitalBeds.capacity"] = pd.to_numeric(RawDF["actuals.hospitalBeds.capacity"], errors='coerce').astype("Int32")  # Int32 handles NAN values
-RawDF["actuals.icuBeds.capacity"] = pd.to_numeric(RawDF["actuals.icuBeds.capacity"], errors='coerce').astype("Int32")
-RawDF["actuals.hospitalBeds.currentUsageCovid"] = pd.to_numeric(RawDF["actuals.hospitalBeds.currentUsageCovid"], errors='coerce').astype("Int32")
-RawDF["actuals.icuBeds.currentUsageCovid"] = pd.to_numeric(RawDF["actuals.icuBeds.currentUsageCovid"], errors='coerce').astype("Int32")
+RawDF["actuals.hospitalBeds.capacity"] = pd.to_numeric(RawDF["actuals.hospitalBeds.capacity"], errors='coerce')
+RawDF["actuals.icuBeds.capacity"] = pd.to_numeric(RawDF["actuals.icuBeds.capacity"], errors='coerce')
+RawDF["actuals.hospitalBeds.currentUsageCovid"] = pd.to_numeric(RawDF["actuals.hospitalBeds.currentUsageCovid"], errors='coerce')
+RawDF["actuals.icuBeds.currentUsageCovid"] = pd.to_numeric(RawDF["actuals.icuBeds.currentUsageCovid"], errors='coerce')
 
 RawDF["metrics.icuCapacityRatioRolling10"] = pd.to_numeric(RawDF["metrics.icuCapacityRatioRolling10"], errors='coerce')
 RawDF["metrics.bedsWithCovidPatientsRatioRolling10"] = pd.to_numeric(RawDF["metrics.bedsWithCovidPatientsRatioRolling10"], errors='coerce')
 RawDF["metrics.weeklyCovidAdmissionsPer100kRolling10"] = pd.to_numeric(RawDF["metrics.weeklyCovidAdmissionsPer100kRolling10"], errors='coerce')
 
-RawDF["actuals.newDeaths"] = pd.to_numeric(RawDF["actuals.newDeaths"], errors='coerce').astype("Int32")
+RawDF["actuals.newDeaths"] = pd.to_numeric(RawDF["actuals.newDeaths"], errors='coerce')
 RawDF["metrics.newDeathsRolling7"] = pd.to_numeric(RawDF["metrics.newDeathsRolling7"], errors='coerce')
 
-RawDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(RawDF["COUNTY_POPESTIMATE2020"], errors='coerce').astype("Int32")
+RawDF["COUNTY_POPESTIMATE2020"] = pd.to_numeric(RawDF["COUNTY_POPESTIMATE2020"], errors='coerce')
 
 # Get rid of rows we are not going to use now. 
 
@@ -45,7 +45,7 @@ RawDF = RawDF.query("pcr_gene_target == 'n1' or pcr_gene_target == 'n2' or pcr_g
 RawDF = RawDF.query("sample_matrix == 'raw wastewater' ")
 print("\nRows with N1 or N2 water samples: " + str(RawDF.shape[0]))
 
-# Get rid of rows with bad data.
+# Get rid of rows with various bad data.
 
 RawDF = RawDF[RawDF["sample_collect_date"].notna()]  
 print("\nRows with good sample dates: " + str(RawDF.shape[0]))
@@ -67,40 +67,28 @@ print (RawDF["pcr_target_avg_conc_norm"].describe())
 
 RawDF["metrics.newDeathsRolling7per100k"] = (RawDF["metrics.newDeathsRolling7"] / RawDF["COUNTY_POPESTIMATE2020"]) * 100000
 
-testDF = RawDF.query("CountyFIPS =='06037' ")  # debugging
+#testDF = RawDF.query("CountyFIPS =='06037' ")  # debugging
 
-# Create a new DF with valid vax info.
-# Not sure we realy need this for analysis. Correlation will ignore empty values. But helpful to see what data we have.
-
-VaxDF = RawDF
-VaxDF = VaxDF[VaxDF["metrics.vaccinationsInitiatedRatio"].notna()]  
-VaxDF = VaxDF[VaxDF["metrics.vaccinationsCompletedRatio"].notna()]  
-#VaxDF = VaxDF[VaxDF["metrics.vaccinationsAdditionalDoseRatio"].notna()]  # many missing values
-
-print("\nRows with good vax ratios: " + str(VaxDF.shape[0]))
+# Check on data we will work with...
 
 print ()
-print (VaxDF["metrics.vaccinationsInitiatedRatio"].describe())
+print (RawDF["metrics.vaccinationsInitiatedRatio"].describe())
 print ()
-print (VaxDF["metrics.vaccinationsCompletedRatio"].describe())
+print (RawDF["metrics.vaccinationsCompletedRatio"].describe())
 
-# Create a new DF with valid hospital info.
-# Not sure we realy need this for analysis. Correlation will ignore empty values. But helpful to see what data we have.
+print ()
+print (RawDF["metrics.icuCapacityRatioRolling10"].describe())
+print ()
+print (RawDF["metrics.bedsWithCovidPatientsRatioRolling10"].describe())
+print ()
+print (RawDF["metrics.weeklyCovidAdmissionsPer100kRolling10"].describe())
 
-HospDF = RawDF
-HospDF = HospDF[HospDF["metrics.icuCapacityRatioRolling10"].notna()]  
-HospDF = HospDF[HospDF["metrics.bedsWithCovidPatientsRatioRolling10"].notna()]  
-HospDF = HospDF[HospDF["metrics.weeklyCovidAdmissionsPer100kRolling10"].notna()]  
+print ()
+print (RawDF["metrics.newDeathsRolling7"].describe())
+print ()
+print (RawDF["metrics.newDeathsRolling7per100k"].describe())
 
-print("\nRows with good hospital ratios: " + str(HospDF.shape[0]))
 
-# Create a new DF with valid death info.
-# Not sure we realy need this for analysis. Correlation will ignore empty values. But helpful to see what data we have.
-
-DeathDF = RawDF
-DeathDF = DeathDF[DeathDF["metrics.newDeathsRolling7"].notna()]  
-
-print("\nRows with good mortality info: " + str(DeathDF.shape[0]))
 
 #RawDF["not_one_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsInitiatedRatio"]) * 100 
 #RawDF["not_full_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsCompletedRatio"]) * 100 
