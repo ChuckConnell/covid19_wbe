@@ -2,6 +2,7 @@
 # Starting with the "enhanced" wastewater data from CDC NWSS, see what interesting analysis we can do on it.
 
 import pandas as pd 
+import math
 
 ENHANCED_RAW_FILE = "~/Desktop/COVID Programming/NwssRawEnhanced.tsv"
 RNA_TOP_COMPRESSION = 0.90  # consider any RNA signal above this quantile as 100%
@@ -61,14 +62,15 @@ RawDF["pcr_target_units_norm"] = "copies/ml wastewater"
 
 RawDF.loc[RawDF["pcr_target_units"] == "copies/l wastewater", "pcr_target_avg_conc_norm"] = (RawDF["pcr_target_avg_conc"] / 1000)
 RawDF.loc[RawDF["pcr_target_units"] == "log10 copies/l wastewater", "pcr_target_avg_conc_norm"] = ((10 ** RawDF["pcr_target_avg_conc"]) / 1000) 
+
 print ()
 print (RawDF["pcr_target_avg_conc_norm"].describe())
 
 # Create a new field with daily deaths per 100k pop. Use the rolling average.
 
 RawDF["metrics.newDeathsRolling7per100k"] = (RawDF["metrics.newDeathsRolling7"] / RawDF["COUNTY_POPESTIMATE2020"]) * 100000
-
-#testDF = RawDF.query("CountyFIPS =='06037' ")  # debugging
+print ()
+print (RawDF["metrics.newDeathsRolling7per100k"].describe())
 
 # Check on data we will work with...
 
@@ -86,13 +88,11 @@ print (RawDF["metrics.bedsWithCovidPatientsRatioRolling10"].describe())
 print ()
 print (RawDF["metrics.weeklyCovidAdmissionsPer100kRolling10"].describe())
 
-print ()
-print (RawDF["metrics.newDeathsRolling7"].describe())
-print ()
-print (RawDF["metrics.newDeathsRolling7per100k"].describe())
 
 # Create a new metric UPR that is "unvaccinated percent + RNA signal percent" The max value will be 200.
 # The hypothesis is that UPR predicts hospitalization and death.
+# RESULT - It turns out this metric is not very useful, at least not so far. It does not correlate
+# with anything any more than straight RNA level. I leave this code in just in case it is useful later.
 
 # First find the percent not vaxed, so we invert the vax ratio.
 
@@ -100,121 +100,56 @@ RawDF["not_one_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsInitiatedRatio"]) *
 RawDF["not_full_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsCompletedRatio"]) * 100 
 RawDF["not_boost_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsAdditionalDoseRatio"]) * 100 
 
-print ()
-print (RawDF["not_one_vax_pct"].describe())
-print ()
-print (RawDF["not_full_vax_pct"].describe())
-print ()
-print (RawDF["not_boost_vax_pct"].describe())
-
 # Normalize the RNA signal so that it is out of 100. This requires compressing all the very high signals to 100.
 
 top_rna = RawDF["pcr_target_avg_conc_norm"].quantile(RNA_TOP_COMPRESSION)
-print ("\nSetting all RNA signals above", top_rna, "to 100%. This is the", RNA_TOP_COMPRESSION, "quantile.")
-
 RawDF["rna_signal_pct"] = (RawDF["pcr_target_avg_conc_norm"] / top_rna) * 100
 RawDF.loc[RawDF["rna_signal_pct"] > 100, "rna_signal_pct"] = 100
-
-print ()
-print (RawDF["rna_signal_pct"].describe())
 
 # Make the UPR metrics -- Unvaxed Plus Rna
 
 RawDF["UPR_one_vax"] = (RawDF["not_one_vax_pct"] + RawDF["rna_signal_pct"]).round(2)
-print ()
-print (RawDF["UPR_one_vax"].describe())
-
 RawDF["UPR_full_vax"] = (RawDF["not_full_vax_pct"] + RawDF["rna_signal_pct"]).round(2)
-print ()
-print (RawDF["UPR_full_vax"].describe())
-
 RawDF["UPR_boost_vax"] = (RawDF["not_boost_vax_pct"] + RawDF["rna_signal_pct"]).round(2)
-print ()
-print (RawDF["UPR_boost_vax"].describe())
 
+# Look at RNA vs test positivity
 
+RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.testPositivityRatio")
+print ("\nRNA vs test positive ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.testPositivityRatio"], method="spearman").round(3)))
 
+# Look at RNA vs case density
 
-'''
-# TODO not 1 vax pct, not full vax pct, not boosted pct
-# RNA signal out of 100, perhaps 6 std above zero
-# vax + RNA, for all 3 vax
+RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.caseDensity100k")
+print ("\nRNA vs case densty per capita: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.caseDensity100k"], method="spearman").round(3)))
 
-# Show scatter of vaccination over time, for all water samples. This is mostly a sanity check, since each
-# county should always be increasing.
+# Look at RNA vs hospitalization
 
-RawDF.plot.scatter(x="sample_collect_date", y="metrics.vaccinationsInitiatedRatio", title="USA WBE -- Date vs Vax -- " + str(RawDF.shape[0]) + " data points" )
+RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.weeklyCovidAdmissionsPer100kRolling10")
+r = RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.weeklyCovidAdmissionsPer100kRolling10"], method="spearman").round(3)
+print ("\nRNA vs hospital covid admits per capita: " + str(r))
+       
+num = 50000
+stderr = 1.0 / math.sqrt(num - 3)
+delta = 1.96 * stderr
+lower = math.tanh(math.atanh(r) - delta)
+upper = math.tanh(math.atanh(r) + delta)
+print ("\n95 pct confidence for above: lower %.4f, upper %.4f" % (lower, upper))
 
-# The RNA detections are not in consistent units. Some are plain and some are log10. Make one consistent column.
+RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.bedsWithCovidPatientsRatioRolling10")
+print ("\nRNA vs hospital beds with covid patients ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.bedsWithCovidPatientsRatioRolling10"], method="spearman").round(3)))
 
-RawDF["pcr_target_units_norm"] = "copies/ml wastewater"
+# Look at RNA vs ICU
 
-RawDF.loc[RawDF["pcr_target_units"] == "copies/l wastewater", "pcr_target_avg_conc_norm"] = (RawDF["pcr_target_avg_conc"] / 1000)
-RawDF.loc[RawDF["pcr_target_units"] == "log10 copies/l wastewater", "pcr_target_avg_conc_norm"] = ((10 ** RawDF["pcr_target_avg_conc"]) / 1000) 
-print ()
-print (RawDF["pcr_target_avg_conc_norm"].describe())
+RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.icuCapacityRatioRolling10")
+print ("\nRNA vs ICU capacity ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.icuCapacityRatioRolling10"], method="spearman").round(3)))
 
-# Throw out outliers for RNA signal. Be careful as this might change over time.
+# Look at RNA vs death
 
-RawDF = RawDF.query("pcr_target_avg_conc_norm <= 30000")
-print("\nRows with N1 or N2 copies/ml <= 30,000: " + str(RawDF.shape[0]))
-
-# Show scatter of RNA signal to vaccinations.
-
-RawDF.plot.scatter(x="metrics.vaccinationsInitiatedRatio", y="pcr_target_avg_conc_norm", title="USA WBE -- 1+ Vax vs WW RNA c/ml")
-RawDF.plot.scatter(x="metrics.vaccinationsCompletedRatio", y="pcr_target_avg_conc_norm", title="USA WBE -- Full Vax vs WW RNA c/ml")
-RawDF.plot.scatter(x="metrics.vaccinationsAdditionalDoseRatio", y="pcr_target_avg_conc_norm", title="USA WBE -- Boost Vax vs WW RNA c/ml")
-
-# Find correlations of RNA to vax status. Note that this is per COUNTY, not per PERSON.
-
-OneVaxCorr = (RawDF["metrics.vaccinationsInitiatedRatio"].corr(RawDF["pcr_target_avg_conc_norm"], method="spearman")).round(3)
-FullVaxCorr = (RawDF["metrics.vaccinationsCompletedRatio"].corr(RawDF["pcr_target_avg_conc_norm"], method="spearman")).round(3)
-BoostVaxCorr = (RawDF["metrics.vaccinationsAdditionalDoseRatio"].corr(RawDF["pcr_target_avg_conc_norm"], method="spearman")).round(3)
-
-print ("\nOne vax to WW RNA correlation (Spearman) over", RawDF.shape[0], "data points is", OneVaxCorr)
-print ("\nFull vax to WW RNA correlation (Spearman) over", RawDF.shape[0], "data points is", FullVaxCorr)
-print ("\nBoosted vax to WW RNA correlation (Spearman) over", RawDF.shape[0], "data points is", BoostVaxCorr)
-
-print ("\nNo negative correlation between vax ratio and WW RNA. Maybe because both vax and RNA increased over the timespan studied.")
-
-# Show scatter of RNA signal to sickness.
-
-RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.caseDensity100k", title="USA WBE -- RNA c/ml vs caseDensity100k")
-RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.infectionRate", title="USA WBE -- RNA c/ml vs infectionRate")
-RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.testPositivityRatio", title="USA WBE -- RNA c/ml vs testPositivityRatio")
-
-# Computer correlations, RNA to sickness.
-
-# ??
-OneVaxCorr = (RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.caseDensity100k"], method="spearman")).round(3)
-FullVaxCorr = (RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.caseDensity100k"], method="spearman")).round(3)
-BoostVaxCorr = (RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.caseDensity100k"], method="spearman")).round(3)
-
-# Hospitalizations
-
-'''
-
-'''metrics.caseDensity100k                  60874 non-null  object
- 85  metrics.infectionRate                    61427 non-null  object
- 86  metrics.testPositivityRatio              61046 non-null  object
- 87  actuals.icuBeds.currentUsageCovid        4826 non-null   object
- 88  actuals.hospitalBeds.currentUsageCovid   5281 non-null   object
- 89  actuals.newDeaths     
-actuals.hospitalBeds.capacity	actuals.icuBeds.capacity
-
-'''
-
-# Calc correlation of RNA to disease outcomes. 
-
-
-
-
-# Calc a new value, RNA + unvaccinated %, for each sample. Intuitively, this is what would correlate to 
-# worse outcomes.
+RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.newDeathsRolling7per100k")
+print ("\nRNA vs new deaths per capita: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.newDeathsRolling7per100k"], method="spearman").round(3)))
 
 
 
 
 
 
- 
