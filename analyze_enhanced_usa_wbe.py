@@ -94,7 +94,7 @@ print (RawDF["metrics.weeklyCovidAdmissionsPer100kRolling10"].describe())
 # RESULT - It turns out this metric is not very useful, at least not so far. It does not correlate
 # with anything any more than straight RNA level. I leave this code in just in case it is useful later.
 
-# First find the percent not vaxed, so we invert the vax ratio.
+# First find the percent not vaxed, so we invert the vax ratios.
 
 RawDF["not_one_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsInitiatedRatio"]) * 100 
 RawDF["not_full_vax_pct"] = (1.0 - RawDF["metrics.vaccinationsCompletedRatio"]) * 100 
@@ -112,21 +112,26 @@ RawDF["UPR_one_vax"] = (RawDF["not_one_vax_pct"] + RawDF["rna_signal_pct"]).roun
 RawDF["UPR_full_vax"] = (RawDF["not_full_vax_pct"] + RawDF["rna_signal_pct"]).round(2)
 RawDF["UPR_boost_vax"] = (RawDF["not_boost_vax_pct"] + RawDF["rna_signal_pct"]).round(2)
 
+# Histogram of RNA copies / ml
+
+RawDF.hist(column="pcr_target_avg_conc_norm", bins=10)
+RawDF.hist(column="pcr_target_avg_conc_norm", bins=10, range=[0,500])
+
 # Look at RNA vs test positivity
 
 RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.testPositivityRatio")
-print ("\nRNA vs test positive ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.testPositivityRatio"], method="spearman").round(3)))
+print ("\nRNA corr test positive ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.testPositivityRatio"], method="spearman").round(3)))
 
 # Look at RNA vs case density
 
 RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.caseDensity100k")
-print ("\nRNA vs case densty per capita: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.caseDensity100k"], method="spearman").round(3)))
+print ("\nRNA corr case densty per 100k pop: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.caseDensity100k"], method="spearman").round(3)))
 
 # Look at RNA vs hospitalization
 
 RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.weeklyCovidAdmissionsPer100kRolling10")
 r = RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.weeklyCovidAdmissionsPer100kRolling10"], method="spearman").round(3)
-print ("\nRNA vs hospital covid admits per capita: " + str(r))
+print ("\nRNA corr hospital covid admits per 100k pop: " + str(r))
        
 num = 50000
 stderr = 1.0 / math.sqrt(num - 3)
@@ -136,19 +141,17 @@ upper = math.tanh(math.atanh(r) + delta)
 print ("\n95 pct confidence for above: lower %.4f, upper %.4f" % (lower, upper))
 
 RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.bedsWithCovidPatientsRatioRolling10")
-print ("\nRNA vs hospital beds with covid patients ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.bedsWithCovidPatientsRatioRolling10"], method="spearman").round(3)))
+print ("\nRNA corr hospital beds with covid patients ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.bedsWithCovidPatientsRatioRolling10"], method="spearman").round(3)))
 
 # Look at RNA vs ICU
 
 RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.icuCapacityRatioRolling10")
-print ("\nRNA vs ICU capacity ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.icuCapacityRatioRolling10"], method="spearman").round(3)))
+print ("\nRNA corr ICU capacity ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.icuCapacityRatioRolling10"], method="spearman").round(3)))
 
 # Look at RNA vs death
 
 RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.newDeathsRolling7per100k")
-print ("\nRNA vs new deaths per capita: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.newDeathsRolling7per100k"], method="spearman").round(3)))
-
-
+print ("\nRNA corr new deaths per day per 100k pop: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.newDeathsRolling7per100k"], method="spearman").round(3)))
 
 
 
