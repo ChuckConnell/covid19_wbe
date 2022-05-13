@@ -50,7 +50,7 @@ print("\nRows with N1 or N2 water samples: " + str(RawDF.shape[0]))
 # Get rid of rows with various bad data.
 
 RawDF = RawDF[RawDF["sample_collect_date"].notna()]  
-print("\nRows with good sample dates: " + str(RawDF.shape[0]))
+print("\nRows with good sample dates: " + str(RawDF.shape[0])) 
 
 RawDF = RawDF[RawDF["pcr_target_avg_conc"].notna()]  
 RawDF = RawDF.query("pcr_target_avg_conc >= 0")
