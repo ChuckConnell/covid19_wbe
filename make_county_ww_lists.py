@@ -7,14 +7,16 @@
 
 import pandas as pd 
 from urllib import request
+from sodapy import Socrata
 
 BIOBOT_DOWNLOAD = "https://github.com/biobotanalytics/covid19-wastewater-data/raw/master/wastewater_by_county.csv"
-NWSS_DOWNLOAD = "https://data.cdc.gov/resource/2ew6-ywp6.csv"  # this is suposed to be the API url, but it does not get all 156k rows, I think it is a CDC bug
+#NWSS_DOWNLOAD = "https://data.cdc.gov/resource/2ew6-ywp6.csv?$$app_token=xu6pPGxUNKQBQn0r0wuMR1O95"
+NWSS_DATASET = "2ew6-ywp6"
 
 USA_COUNTIES_LOCAL = "/Users/chuck/Desktop/COVID Programming/fips2county.tsv"
 COUNTY_POP_LOCAL = "/Users/chuck/Desktop/COVID Programming/US Census/Population_Density_County.csv"
 BIOBOT_LOCAL = "/Users/chuck/Desktop/COVID Programming/Biobot/wastewater_by_county.csv"
-NWSS_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/NWSS_Public_SARS-CoV-2_Wastewater_Metric_Data.tsv"  # i got this manually for now
+#NWSS_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/NWSS_Public_SARS-CoV-2_Wastewater_Metric_Data.tsv"  # i got this manually for now
 SVI_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/DiabetesAtlasData_2018.csv"
 
 BIOBOT_LIST = "biobot_counties.txt"
@@ -64,22 +66,24 @@ BiobotDF = pd.read_csv(BIOBOT_LOCAL, sep=',', header='infer', dtype=str)
 BiobotDF = BiobotDF[["fipscode"]]  # don't need any other columns
 BiobotDF = BiobotDF.rename(columns={"fipscode":"FIPS"})  # to match Flourish naming
 BiobotDF.loc[BiobotDF["FIPS"].str.len() == 4, "FIPS"] = "0" + BiobotDF["FIPS"]  # fix problem with missing leading zeroes 
-BiobotDF = BiobotDF.merge(AllCountiesDF, how="left", on=["FIPS"])  # add readable names
+BiobotDF = BiobotDF.merge(AllCountiesDF, how="inner", on=["FIPS"])  # add readable names
 
-# Get the latest counties covered by NWSS. We grab this from their public dataset, not the special restricted data.
+# Get the latest counties covered by NWSS. 
+# We grab this from their public dataset, not the special restricted data.
 # This dataset sometimes has more than one FIPS per row, so we have to "normalize" and explode these rows.
 
-#request.urlretrieve(NWSS_DOWNLOAD, NWSS_LOCAL)   # TODO uncomment when we have a url that will get all rows, using a full local copy for now
-NwssDF = pd.read_csv(NWSS_LOCAL, sep='\t', header='infer',  dtype=str)
+cdc_client = Socrata("data.cdc.gov", None)
+NwssDF = pd.DataFrame.from_records(cdc_client.get(NWSS_DATASET, limit=1000000))
 
 NwssDF = NwssDF[["county_fips"]]  # don't need any other columns
+NwssDF["county_fips"] = NwssDF["county_fips"].astype(str)  # make sure it is a string
 NwssDF = NwssDF.rename(columns={"county_fips":"FIPS"})  # to match Flourish naming
 
 NwssDF["FIPS"] = NwssDF["FIPS"].str.split(",")    # change comma separate string to array
 NwssDF = NwssDF.explode("FIPS")          # make one row per county
 NwssDF["FIPS"] = NwssDF["FIPS"].str.strip("[]' ")   # clean up, one pure FIPS per row
 
-NwssDF = NwssDF.merge(AllCountiesDF, how="left", on=["FIPS"])  # add readable names
+NwssDF = NwssDF.merge(AllCountiesDF, how="inner", on=["FIPS"])  # add readable names
 
 # For each data source, get only the field we want in the output lists, and put them into a Python set.
 
