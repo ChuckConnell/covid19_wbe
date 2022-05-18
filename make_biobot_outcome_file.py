@@ -6,7 +6,7 @@ import pandas as pd
 from urllib import request
 
 BIOBOT_DOWNLOAD = "https://github.com/biobotanalytics/covid19-wastewater-data/raw/master/wastewater_by_county.csv"
-COVID_ACT_NOW_DOWNLOAD = "https://api.covidactnow.org/v2/counties.timeseries.csv?apiKey=402c0523d9e64d4fb62f37fbf499bf7b"
+COVID_ACT_NOW_DOWNLOAD = "https://api.covidactnow.org/v2/country/US.timeseries.csv?apiKey=402c0523d9e64d4fb62f37fbf499bf7b"
 
 #COUNTY_POP_LOCAL = "/Users/chuck/Desktop/COVID Programming/US Census/Population_Density_County.csv"
 BIOBOT_LOCAL = "/Users/chuck/Desktop/COVID Programming/Biobot/wastewater_by_county.csv"
@@ -27,36 +27,54 @@ BIOBOT_REGIONS_CHART_DATA = "biobot_vs_outcomes_regions.tsv"
 request.urlretrieve(BIOBOT_DOWNLOAD, BIOBOT_LOCAL)
 BiobotDF = pd.read_csv(BIOBOT_LOCAL, sep=',', header='infer', dtype=str)
 
-#BiobotDF = BiobotDF[["fipscode"]]  # don't need any other columns
-#BiobotDF = BiobotDF.rename(columns={"fipscode":"FIPS"})  # to match Flourish naming
-#BiobotDF.loc[BiobotDF["FIPS"].str.len() == 4, "FIPS"] = "0" + BiobotDF["FIPS"]  # fix problem with missing leading zeroes 
-#BiobotDF = BiobotDF.merge(AllCountiesDF, how="inner", on=["FIPS"])  # add readable names
-BiobotDF["sampling_week"] = pd.to_datetime(BiobotDF["sampling_week"]).dt.date
-BiobotDF["effective_concentration_rolling_average"] = pd.to_numeric(BiobotDF["effective_concentration_rolling_average"])
+BiobotDF = BiobotDF.rename(columns={"fipscode":"FIPS"})  # to match Flourish naming
+BiobotDF.loc[BiobotDF["FIPS"].str.len() == 4, "FIPS"] = "0" + BiobotDF["FIPS"]  # fix problem with missing leading zeroes 
+BiobotDF["sampling_week"] = pd.to_datetime(BiobotDF["sampling_week"], errors='coerce').dt.date
+BiobotDF["effective_concentration_rolling_average"] = pd.to_numeric(BiobotDF["effective_concentration_rolling_average"], errors='coerce')
 
-# Group by whole country or regions and get average gene copies for that week. Use as_index=False to restore grouped column names.
+# Group Biobot data by whole country or regions and get average gene copies for that week. Use as_index=False to restore grouped column names.
 
-BiobotWeeklyUsaDF = BiobotDF[["sampling_week","effective_concentration_rolling_average"]].groupby("sampling_week", sort=True, dropna=True, as_index=False).mean()
-BiobotWeeklyRegionsDF = BiobotDF[["sampling_week","region","effective_concentration_rolling_average"]].groupby(["sampling_week","region"], sort=True, dropna=True, as_index=False).mean()
+BiobotWeeklyUsaDF = BiobotDF[["sampling_week","effective_concentration_rolling_average"]]
+BiobotWeeklyUsaDF = BiobotWeeklyUsaDF.groupby("sampling_week", sort=True, dropna=True, as_index=False).mean()
 
-# COVID outcome by counties.
+BiobotWeeklyRegionsDF = BiobotDF[["sampling_week","region","effective_concentration_rolling_average"]]
+BiobotWeeklyRegionsDF = BiobotWeeklyRegionsDF.groupby(["sampling_week","region"], sort=True, dropna=True, as_index=False).mean()
 
-#request.urlretrieve(COVID_ACT_NOW_DOWNLOAD, COVID_ACT_NOW_LOCAL)
-#CovidDF = pd.read_csv(COVID_ACT_NOW_LOCAL, sep=',', header='infer', dtype=str)
+# Get overall USA COVID outcomes. Tweak as needed.
 
-# Create DFs that hold info we need to make Flourish charts. Tweak as needed.
-# For the regions chart, we need one column of sequential dates, with N columns of data for that date. 
+request.urlretrieve(COVID_ACT_NOW_DOWNLOAD, COVID_ACT_NOW_LOCAL)
+CovidDF = pd.read_csv(COVID_ACT_NOW_LOCAL, sep=',', header='infer', dtype=str)
+
+CovidDF = CovidDF.rename(columns={"metrics.caseDensity":"metrics.caseDensity100k", "date":"covid_facts_date"})
+CovidDF["covid_facts_date"] = pd.to_datetime(CovidDF["covid_facts_date"], errors='coerce')
+
+# Add a rolling average for some key hospitalization info. It is only reported weekly, so there are many empty days now.
+# The goal is to fill in the missing days with reasonable numbers, so downstream there is something there.
+
+CovidDF = CovidDF.sort_values(["covid_facts_date"], ascending=[True])
+CovidDF["metrics.icuCapacityRatioRolling10"] = CovidDF["metrics.icuCapacityRatio"].rolling(10, min_periods=1, center=True, closed='both').mean()
+CovidDF["metrics.bedsWithCovidPatientsRatioRolling10"] = CovidDF["metrics.bedsWithCovidPatientsRatio"].rolling(10, min_periods=1, center=True, closed='both').mean()
+CovidDF["metrics.weeklyCovidAdmissionsPer100kRolling10"] = CovidDF["metrics.weeklyCovidAdmissionsPer100k"].rolling(10, min_periods=1, center=True, closed='both').mean()
+
+# Add a rolling average for daily deaths.
+
+CovidDF = CovidDF.sort_values(["covid_facts_date"], ascending=[True])
+CovidDF["metrics.newDeathsRolling7"] = CovidDF["actuals.newDeaths"].rolling(7, min_periods=1, center=True, closed='both').mean()
+
+# Create the DF for whole USA Flourish chart. Tweak as needed.
 
 UsaChartDF = BiobotWeeklyUsaDF
 UsaChartDF = UsaChartDF.rename(columns={"sampling_week":"week", "effective_concentration_rolling_average":"gene_copies"})
 
-RegionsChartDF = BiobotWeeklyRegionsDF
-RegionsChartDF = RegionsChartDF.rename(columns={"sampling_week":"week", "effective_concentration_rolling_average":"RNA_average"})
+# Create the DF for regional USA Flourish chart. Tweak as needed.
 
-RegionsChartDF.loc[RegionsChartDF["region"] == "Midwest", "Midwest"] = RegionsChartDF["RNA_average"]
-RegionsChartDF.loc[RegionsChartDF["region"] == "Northeast", "Northeast"] = RegionsChartDF["RNA_average"]
-RegionsChartDF.loc[RegionsChartDF["region"] == "South", "South"] = RegionsChartDF["RNA_average"]
-RegionsChartDF.loc[RegionsChartDF["region"] == "West", "West"] = RegionsChartDF["RNA_average"]
+RegionsChartDF = BiobotWeeklyRegionsDF
+RegionsChartDF = RegionsChartDF.rename(columns={"sampling_week":"week", "effective_concentration_rolling_average":"gene_copies"})
+
+RegionsChartDF.loc[RegionsChartDF["region"] == "Midwest", "Midwest"] = RegionsChartDF["gene_copies"]
+RegionsChartDF.loc[RegionsChartDF["region"] == "Northeast", "Northeast"] = RegionsChartDF["gene_copies"]
+RegionsChartDF.loc[RegionsChartDF["region"] == "South", "South"] = RegionsChartDF["gene_copies"]
+RegionsChartDF.loc[RegionsChartDF["region"] == "West", "West"] = RegionsChartDF["gene_copies"]
     
 # Write out the map data files. 
 
