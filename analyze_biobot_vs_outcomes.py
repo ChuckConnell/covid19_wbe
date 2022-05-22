@@ -10,7 +10,7 @@ COVID_ACT_NOW_DOWNLOAD = "https://api.covidactnow.org/v2/country/US.timeseries.c
 COVID_ACT_NOW_LOCAL = "/Users/chuck/Desktop/COVID Programming/Covid Act Now/US.timeseries.csv"
 
 HOSP_LOOK_AHEAD = 14     # how far ahead of sample do we look for hospitalization info
-DEATHS_LOOK_AHEAD = 21     # how far ahead of sample do we look for mortality info
+DEATHS_LOOK_AHEAD = 28    # how far ahead of sample do we look for mortality info
 
 BIOBOT_USA_CHART_DATA = "biobot_vs_outcomes_usa.tsv"
 
@@ -41,20 +41,15 @@ CovidDF["icu_rolling10"] = (CovidDF["actuals.icuBeds.currentUsageCovid"].rolling
 
 # Deaths are reported every day, but smooth them out.
 
-CovidDF["deaths_rolling10"] = CovidDF["actuals.newDeaths"].rolling(10, min_periods=1, center=True, closed='both').mean()
+CovidDF["deaths_rolling5"] = CovidDF["actuals.newDeaths"].rolling(5, min_periods=1, center=True, closed='both').mean()
 
-# Create the DF for whole USA Flourish chart, by merging Biobot with Covid Act Now. Tweak as needed.
+# Create the DF for Flourish chart, by merging Biobot with Covid Act Now. Tweak as needed.
 
 UsaDF = BiobotDF.query("region=='Nationwide'")  # don't need the regional data
 UsaDF = UsaDF.merge(CovidDF, how='left', left_on="sampling_week", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 UsaDF = UsaDF.rename(columns={"sampling_week":"week", "effective_concentration_rolling_average":"copies_ml"})
 UsaDF = UsaDF.query("week >= 20200401")   # not much useful data before this
-
-# Write out the chart data file. 
-
-print ("\nWriting chart data to " + BIOBOT_USA_CHART_DATA)
-UsaDF.to_csv(BIOBOT_USA_CHART_DATA, encoding='utf-8', sep='\t', index=False)
 
 # Add some look-ahead dates to the data, so we can look up covid outcomes AFTER the water test dates.
 
@@ -66,8 +61,8 @@ UsaDF["deaths_date"] = UsaDF["week"] +  pd.offsets.Day(DEATHS_LOOK_AHEAD)
 HospDF = CovidDF[["covid_facts_date","admits_rolling10","beds_rolling10","icu_rolling10"]]
 HospDF = HospDF.rename(columns={"admits_rolling10":"admits_later", "beds_rolling10":"beds_later", "icu_rolling10":"icu_later"})
 
-DeathsDF = CovidDF[["covid_facts_date", "deaths_rolling10"]]
-DeathsDF = DeathsDF.rename(columns={"deaths_rolling10":"deaths_later"})
+DeathsDF = CovidDF[["covid_facts_date", "deaths_rolling5"]]
+DeathsDF = DeathsDF.rename(columns={"deaths_rolling5":"deaths_later"})
 
 # Join these look-ahead facts with the main DF
 
@@ -77,8 +72,28 @@ UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 UsaDF = UsaDF.merge(DeathsDF, how='left', left_on="deaths_date", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 
-# TODO Look at RNA vs test positivity
+# Look at RNA vs hospital admissions
 
-#RawDF.plot.scatter(x="pcr_target_avg_conc_norm", y="metrics.testPositivityRatio")
-#print ("\nRNA corr test positive ratio: " + str(RawDF["pcr_target_avg_conc_norm"].corr(RawDF["metrics.testPositivityRatio"], method="spearman").round(3)))
+UsaDF.plot.scatter(x="copies_ml", y="admits_later")
+print ("\nRNA corr hospital admits: " + str(UsaDF["copies_ml"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+
+# Look at RNA vs hospital beds
+
+UsaDF.plot.scatter(x="copies_ml", y="beds_later")
+print ("\nRNA corr hospital beds: " + str(UsaDF["copies_ml"].corr(UsaDF["beds_later"], method="spearman").round(3)))
+
+# Look at RNA vs ICU
+
+UsaDF.plot.scatter(x="copies_ml", y="icu_later")
+print ("\nRNA corr ICU: " + str(UsaDF["copies_ml"].corr(UsaDF["icu_later"], method="spearman").round(3)))
+
+# Look at RNA vs deaths
+
+UsaDF.plot.scatter(x="copies_ml", y="deaths_later")
+print ("\nRNA corr deaths: " + str(UsaDF["copies_ml"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
+
+# Write out the chart data file. 
+
+print ("\nWriting chart data to " + BIOBOT_USA_CHART_DATA)
+UsaDF.to_csv(BIOBOT_USA_CHART_DATA, encoding='utf-8', sep='\t', index=False)
 
