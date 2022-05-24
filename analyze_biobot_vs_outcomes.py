@@ -64,33 +64,40 @@ HospDF = HospDF.rename(columns={"admits_rolling10":"admits_later", "beds_rolling
 DeathsDF = CovidDF[["covid_facts_date", "deaths_rolling5"]]
 DeathsDF = DeathsDF.rename(columns={"deaths_rolling5":"deaths_later"})
 
-# Join these look-ahead facts with the main DF
+# Join these look-ahead facts with the main DF. 
+# Must use inner join because recent water test dates do not yet have any matching outcome data.
 
-UsaDF = UsaDF.merge(HospDF, how='left', left_on="hosp_date", right_on="covid_facts_date")
+UsaDF = UsaDF.merge(HospDF, how='inner', left_on="hosp_date", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 
-UsaDF = UsaDF.merge(DeathsDF, how='left', left_on="deaths_date", right_on="covid_facts_date")
+UsaDF = UsaDF.merge(DeathsDF, how='inner', left_on="deaths_date", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
+
+# Final dataset info
+
+print ("\nThe final dataset has " + str(UsaDF.shape[0]) + " rows from " + str(UsaDF["week"].min().date()) + " to " + str(UsaDF["week"].max().date()) )
+print ("\nHospitalization look ahead = " + str(HOSP_LOOK_AHEAD))
+print ("\nMortality look ahead = " + str(DEATHS_LOOK_AHEAD))
 
 # Look at RNA vs hospital admissions
 
 UsaDF.plot.scatter(x="copies_ml", y="admits_later")
-print ("\nRNA corr hospital admits: " + str(UsaDF["copies_ml"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+print ("\nRNA corr later hospital admits: " + str(UsaDF["copies_ml"].corr(UsaDF["admits_later"], method="spearman").round(3)))
 
 # Look at RNA vs hospital beds
 
 UsaDF.plot.scatter(x="copies_ml", y="beds_later")
-print ("\nRNA corr hospital beds: " + str(UsaDF["copies_ml"].corr(UsaDF["beds_later"], method="spearman").round(3)))
+print ("\nRNA corr later hospital beds: " + str(UsaDF["copies_ml"].corr(UsaDF["beds_later"], method="spearman").round(3)))
 
 # Look at RNA vs ICU
 
 UsaDF.plot.scatter(x="copies_ml", y="icu_later")
-print ("\nRNA corr ICU: " + str(UsaDF["copies_ml"].corr(UsaDF["icu_later"], method="spearman").round(3)))
+print ("\nRNA corr later ICU: " + str(UsaDF["copies_ml"].corr(UsaDF["icu_later"], method="spearman").round(3)))
 
 # Look at RNA vs deaths
 
 UsaDF.plot.scatter(x="copies_ml", y="deaths_later")
-print ("\nRNA corr deaths: " + str(UsaDF["copies_ml"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
+print ("\nRNA corr later deaths: " + str(UsaDF["copies_ml"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
 
 # Write out the chart data file. 
 
