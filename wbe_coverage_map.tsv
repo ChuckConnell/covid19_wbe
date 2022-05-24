@@ -477,7 +477,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 13179	GA | LIBERTY | 13179	none	46.4	high	0.888	high
 13181	GA | LINCOLN | 13181	none	14.3	med	0.556	med
 13183	GA | LONG | 13183	none	17.5	med	0.827	high
-13185	GA | LOWNDES | 13185	biobot	89.0	high	0.866	high
+13185	GA | LOWNDES | 13185	biobot-nwss	89.0	high	0.866	high
 13187	GA | LUMPKIN | 13187	none	43.6	high	0.434	med
 13189	GA | MCDUFFIE | 13189	none	32.2	high	0.938	high
 13191	GA | MCINTOSH | 13191	none	12.6	med	0.586	med
@@ -577,7 +577,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 16049	ID | IDAHO | 16049	none	0.7	low	0.539	med
 16051	ID | JEFFERSON | 16051	none	9.9	med	0.252	low
 16053	ID | JEROME | 16053	none	15.1	med	0.674	high
-16055	ID | KOOTENAI | 16055	none	47.9	high	0.233	low
+16055	ID | KOOTENAI | 16055	nwss	47.9	high	0.233	low
 16057	ID | LATAH | 16057	biobot-nwss	14.1	med	0.248	low
 16059	ID | LEMHI | 16059	none	0.7	low	0.3	low
 16061	ID | LEWIS | 16061	none	3.1	low	0.568	med
@@ -1128,7 +1128,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 22027	LA | CLAIBORNE PARISH | 22027	none	8.3	low	0.948	high
 22029	LA | CONCORDIA PARISH | 22029	none	11.1	med	0.913	high
 22031	LA | DE SOTO PARISH | 22031	none	12.0	med	0.892	high
-22033	LA | EAST BATON ROUGE PARISH | 22033	biobot	376.6	high	0.665	med
+22033	LA | EAST BATON ROUGE PARISH | 22033	biobot-nwss	376.6	high	0.665	med
 22035	LA | EAST CARROLL PARISH | 22035	none	6.6	low	0.936	high
 22037	LA | EAST FELICIANA PARISH | 22037	none	16.6	med	0.818	high
 22039	LA | EVANGELINE PARISH | 22039	none	19.6	med	0.998	high
@@ -1216,20 +1216,20 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 24045	MD | WICOMICO | 24045	nwss	105.4	high	0.774	high
 24047	MD | WORCESTER | 24047	none	42.5	high	0.28	low
 24510	MD | BALTIMORE CITY | 24510	none	2932.0	high	0.831	high
-25001	MA | BARNSTABLE | 25001	none	209.3	high	0.056	low
+25001	MA | BARNSTABLE | 25001	biobot	209.3	high	0.056	low
 25003	MA | BERKSHIRE | 25003	biobot	53.0	high	0.408	med
-25005	MA | BRISTOL | 25005	none	390.2	high	0.525	med
+25005	MA | BRISTOL | 25005	biobot	390.2	high	0.525	med
 25007	MA | DUKES | 25007	none	64.8	high	0.01	low
 25009	MA | ESSEX | 25009	biobot	612.3	high	0.508	med
-25011	MA | FRANKLIN | 25011	none	39.2	high	0.21	low
+25011	MA | FRANKLIN | 25011	biobot	39.2	high	0.21	low
 25013	MA | HAMPDEN | 25013	nwss	293.6	high	0.823	high
 25015	MA | HAMPSHIRE | 25015	biobot	118.0	high	0.232	low
 25017	MA | MIDDLESEX | 25017	biobot-nwss	753.1	high	0.226	low
 25019	MA | NANTUCKET | 25019	biobot	92.9	high	0.027	low
 25021	MA | NORFOLK | 25021	nwss	680.6	high	0.209	low
-25023	MA | PLYMOUTH | 25023	none	300.1	high	0.23	low
+25023	MA | PLYMOUTH | 25023	biobot	300.1	high	0.23	low
 25025	MA | SUFFOLK | 25025	biobot-nwss	5248.5	high	0.738	high
-25027	MA | WORCESTER | 25027	none	210.2	high	0.41	med
+25027	MA | WORCESTER | 25027	biobot	210.2	high	0.41	med
 26001	MI | ALCONA | 26001	none	5.9	low	0.256	low
 26003	MI | ALGER | 26003	none	3.9	low	0.448	med
 26005	MI | ALLEGAN | 26005	nwss	53.9	high	0.176	low
@@ -1264,7 +1264,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 26063	MI | HURON | 26063	none	14.6	med	0.274	low
 26065	MI | INGHAM | 26065	none	201.0	high	0.574	med
 26067	MI | IONIA | 26067	none	43.4	high	0.478	med
-26069	MI | IOSCO | 26069	none	17.8	med	0.449	med
+26069	MI | IOSCO | 26069	nwss	17.8	med	0.449	med
 26071	MI | IRON | 26071	none	3.7	low	0.282	low
 26073	MI | ISABELLA | 26073	none	47.7	high	0.602	med
 26075	MI | JACKSON | 26075	nwss	87.4	high	0.551	med
@@ -1281,10 +1281,10 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 26097	MI | MACKINAC | 26097	nwss	4.1	low	0.645	med
 26099	MI | MACOMB | 26099	nwss	699.9	high	0.33	low
 26101	MI | MANISTEE | 26101	nwss	17.4	med	0.4	med
-26103	MI | MARQUETTE | 26103	none	14.3	med	0.306	low
+26103	MI | MARQUETTE | 26103	nwss	14.3	med	0.306	low
 26105	MI | MASON | 26105	none	22.5	med	0.338	med
 26107	MI | MECOSTA | 26107	none	30.1	med	0.598	med
-26109	MI | MENOMINEE | 26109	none	8.6	low	0.276	low
+26109	MI | MENOMINEE | 26109	nwss	8.6	low	0.276	low
 26111	MI | MIDLAND | 26111	none	62.4	high	0.162	low
 26113	MI | MISSAUKEE | 26113	none	10.3	med	0.476	med
 26115	MI | MONROE | 26115	none	105.2	high	0.149	low
@@ -1298,10 +1298,10 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 26131	MI | ONTONAGON | 26131	none	1.8	low	0.273	low
 26133	MI | OSCEOLA | 26133	none	15.8	med	0.74	high
 26135	MI | OSCODA | 26135	none	5.6	low	0.669	high
-26137	MI | OTSEGO | 26137	none	18.3	med	0.369	med
+26137	MI | OTSEGO | 26137	nwss	18.3	med	0.369	med
 26139	MI | OTTAWA | 26139	nwss	194.6	high	0.217	low
 26141	MI | PRESQUE ISLE | 26141	none	7.5	low	0.276	low
-26143	MI | ROSCOMMON | 26143	none	17.7	med	0.463	med
+26143	MI | ROSCOMMON | 26143	nwss	17.7	med	0.463	med
 26145	MI | SAGINAW | 26145	nwss	93.0	high	0.705	high
 26147	MI | ST. CLAIR | 26147	none	85.4	high	0.279	low
 26149	MI | ST. JOSEPH | 26149	nwss	47.0	high	0.652	med
@@ -1314,7 +1314,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 26163	MI | WAYNE | 26163	nwss	1111.2	high	0.872	high
 26165	MI | WEXFORD | 26165	none	22.6	med	0.503	med
 27001	MN | AITKIN | 27001	none	3.4	low	0.308	low
-27003	MN | ANOKA | 27003	none	317.9	high	0.14	low
+27003	MN | ANOKA | 27003	nwss	317.9	high	0.14	low
 27005	MN | BECKER | 27005	none	9.9	med	0.299	low
 27007	MN | BELTRAMI | 27007	none	7.1	low	0.777	high
 27009	MN | BENTON | 27009	none	37.6	high	0.432	med
@@ -1322,7 +1322,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 27013	MN | BLUE EARTH | 27013	none	34.2	high	0.284	low
 27015	MN | BROWN | 27015	none	15.9	med	0.127	low
 27017	MN | CARLTON | 27017	none	15.9	med	0.267	low
-27019	MN | CARVER | 27019	none	109.5	high	0.012	low
+27019	MN | CARVER | 27019	nwss	109.5	high	0.012	low
 27021	MN | CASS | 27021	none	5.5	low	0.35	med
 27023	MN | CHIPPEWA | 27023	none	8.0	low	0.352	med
 27025	MN | CHISAGO | 27025	none	50.9	high	0.059	low
@@ -1331,7 +1331,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 27031	MN | COOK | 27031	none	1.4	low	0.203	low
 27033	MN | COTTONWOOD | 27033	none	6.9	low	0.473	med
 27035	MN | CROW WING | 27035	none	24.7	med	0.122	low
-27037	MN | DAKOTA | 27037	biobot	287.1	high	0.121	low
+27037	MN | DAKOTA | 27037	biobot-nwss	287.1	high	0.121	low
 27039	MN | DODGE | 27039	none	18.1	med	0.057	low
 27041	MN | DOUGLAS | 27041	none	22.6	med	0.045	low
 27043	MN | FARIBAULT | 27043	none	7.5	low	0.157	low
@@ -1339,7 +1339,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 27047	MN | FREEBORN | 27047	none	16.7	med	0.433	med
 27049	MN | GOODHUE | 27049	none	23.6	med	0.171	low
 27051	MN | GRANT | 27051	none	4.2	low	0.095	low
-27053	MN | HENNEPIN | 27053	biobot	861.3	high	0.309	low
+27053	MN | HENNEPIN | 27053	biobot-nwss	861.3	high	0.309	low
 27055	MN | HOUSTON | 27055	none	13.1	med	0.018	low
 27057	MN | HUBBARD | 27057	none	8.7	low	0.205	low
 27059	MN | ISANTI | 27059	none	34.5	high	0.102	low
@@ -1374,7 +1374,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 27117	MN | PIPESTONE | 27117	none	7.6	low	0.465	med
 27119	MN | POLK | 27119	none	6.2	low	0.367	med
 27121	MN | POPE | 27121	none	6.3	low	0.032	low
-27123	MN | RAMSEY | 27123	none	1373.5	high	0.633	med
+27123	MN | RAMSEY | 27123	nwss	1373.5	high	0.633	med
 27125	MN | RED LAKE | 27125	none	3.6	low	0.152	low
 27127	MN | REDWOOD | 27127	none	6.7	low	0.229	low
 27129	MN | RENVILLE | 27129	none	5.8	low	0.197	low
@@ -1382,7 +1382,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 27133	MN | ROCK | 27133	none	7.5	low	0.153	low
 27135	MN | ROSEAU | 27135	none	3.6	low	0.248	low
 27137	MN | ST. LOUIS | 27137	none	12.4	med	0.312	low
-27139	MN | SCOTT | 27139	none	155.4	high	0.111	low
+27139	MN | SCOTT | 27139	nwss	155.4	high	0.111	low
 27141	MN | SHERBURNE | 27141	none	83.2	high	0.088	low
 27143	MN | SIBLEY | 27143	none	9.8	med	0.132	low
 27145	MN | STEARNS | 27145	none	45.1	high	0.388	med
@@ -1394,7 +1394,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 27157	MN | WABASHA | 27157	none	15.9	med	0.059	low
 27159	MN | WADENA | 27159	none	9.8	med	0.655	med
 27161	MN | WASECA | 27161	none	17.2	med	0.25	low
-27163	MN | WASHINGTON | 27163	none	254.4	high	0.068	low
+27163	MN | WASHINGTON | 27163	nwss	254.4	high	0.068	low
 27165	MN | WATONWAN | 27165	none	9.7	med	0.519	med
 27167	MN | WILKIN | 27167	none	3.3	low	0.192	low
 27169	MN | WINONA | 27169	none	31.4	high	0.212	low
@@ -1621,7 +1621,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 30043	MT | JEFFERSON | 30043	none	2.7	low	0.048	low
 30045	MT | JUDITH BASIN | 30045	none	0.4	low	0.016	low
 30047	MT | LAKE | 30047	none	7.7	low	0.647	med
-30049	MT | LEWIS AND CLARK | 30049	none	7.5	low	0.126	low
+30049	MT | LEWIS AND CLARK | 30049	nwss	7.5	low	0.126	low
 30051	MT | LIBERTY | 30051	none	0.6	low	0.41	med
 30053	MT | LINCOLN | 30053	none	2.1	low	0.419	med
 30055	MT | MCCONE | 30055	none	0.2	low	0.077	low
@@ -1869,7 +1869,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 36079	NY | PUTNAM | 36079	nwss	166.1	high	0.081	low
 36081	NY | QUEENS | 36081	nwss	8158.4	high	0.62	med
 36083	NY | RENSSELAER | 36083	nwss	94.3	high	0.343	med
-36085	NY | RICHMOND | 36085	none	3182.5	high	0.476	med
+36085	NY | RICHMOND | 36085	nwss	3182.5	high	0.476	med
 36087	NY | ROCKLAND | 36087	nwss	720.6	high	0.604	med
 36089	NY | ST. LAWRENCE | 36089	nwss	15.8	med	0.748	high
 36091	NY | SARATOGA | 36091	nwss	108.4	high	0.048	low
@@ -2650,7 +2650,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 48251	TX | JOHNSON | 48251	none	87.1	high	0.507	med
 48253	TX | JONES | 48253	none	8.3	low	0.633	med
 48255	TX | KARNES | 48255	none	7.9	low	0.842	high
-48257	TX | KAUFMAN | 48257	biobot	58.8	high	0.569	med
+48257	TX | KAUFMAN | 48257	biobot-nwss	58.8	high	0.569	med
 48259	TX | KENDALL | 48259	none	24.5	med	0.228	low
 48261	TX | KENEDY | 48261	none	0.2	low	0.733	high
 48263	TX | KENT | 48263	none	0.3	low	0.443	med
@@ -2691,7 +2691,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 48333	TX | MILLS | 48333	none	2.5	low	0.769	high
 48335	TX | MITCHELL | 48335	none	3.6	low	0.621	med
 48337	TX | MONTAGUE | 48337	none	8.1	low	0.584	med
-48339	TX | MONTGOMERY | 48339	nwss	205.3	high	0.391	med
+48339	TX | MONTGOMERY | 48339	none	205.3	high	0.391	med
 48341	TX | MOORE | 48341	none	9.4	low	0.699	high
 48343	TX | MORRIS | 48343	none	19.0	med	0.73	high
 48345	TX | MOTLEY | 48345	none	0.5	low	0.7	high
@@ -2825,7 +2825,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 51007	VA | AMELIA | 51007	none	14.0	med	0.317	low
 51009	VA | AMHERST | 51009	nwss	26.0	med	0.468	med
 51011	VA | APPOMATTOX | 51011	none	18.0	med	0.364	med
-51013	VA | ARLINGTON | 51013	biobot	3442.6	high	0.14	low
+51013	VA | ARLINGTON | 51013	biobot-nwss	3442.6	high	0.14	low
 51015	VA | AUGUSTA | 51015	none	29.8	med	0.149	low
 51017	VA | BATH | 51017	none	3.2	low	0.247	low
 51019	VA | BEDFORD | 51019	nwss	39.6	high	0.098	low
