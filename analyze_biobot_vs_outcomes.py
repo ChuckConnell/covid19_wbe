@@ -39,6 +39,9 @@ CovidDF = pd.read_csv(COVID_ACT_NOW_LOCAL, sep=',', header='infer', dtype=str)
 CovidDF = CovidDF[["date", "actuals.hospitalBeds.weeklyCovidAdmissions", "actuals.hospitalBeds.currentUsageCovid", "actuals.icuBeds.currentUsageCovid", "actuals.newDeaths", "metrics.vaccinationsInitiatedRatio", "metrics.vaccinationsCompletedRatio", "metrics.vaccinationsAdditionalDoseRatio"]]
 CovidDF = CovidDF.rename(columns={"date":"covid_facts_date"})
 CovidDF["covid_facts_date"] = pd.to_datetime(CovidDF["covid_facts_date"], errors='coerce')
+CovidDF["metrics.vaccinationsInitiatedRatio"] = pd.to_numeric(CovidDF["metrics.vaccinationsInitiatedRatio"], errors='coerce')
+CovidDF["metrics.vaccinationsCompletedRatio"] = pd.to_numeric(CovidDF["metrics.vaccinationsCompletedRatio"], errors='coerce')
+CovidDF["metrics.vaccinationsAdditionalDoseRatio"] = pd.to_numeric(CovidDF["metrics.vaccinationsAdditionalDoseRatio"], errors='coerce')
 
 # Add a rolling average for some key hospitalization info. It is only reported weekly, so there are many empty days now.
 # The goal is to fill in the missing days with reasonable numbers, so downstream there is something there.
@@ -90,6 +93,7 @@ DeathsDF = CovidDF[["covid_facts_date", "deaths_rolling5"]]
 DeathsDF = DeathsDF.rename(columns={"deaths_rolling5":"deaths_later"})
 
 VaxDF = CovidDF[["covid_facts_date", "not_one_vax_pct", "not_full_vax_pct", "not_boost_vax_pct"]]
+VaxDF = VaxDF.rename(columns={"not_one_vax_pct":"not_one_vax_earlier", "not_full_vax_pct":"not_full_vax_earlier", "not_boost_vax_pct":"not_boost_vax_earlier"})
 
 # Join these look-ahead and look-back facts with the main DF. 
 # Must use inner join for outcomes because recent water test dates do not yet have any matching outcome data.
@@ -105,15 +109,18 @@ UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 
 # Make the UPR metrics -- Unvaxed Plus Rna
 
-UsaDF["UPR_one_vax"] = (UsaDF["not_one_vax_pct"] + UsaDF["rna_signal_pct"]).round(2)
-UsaDF["UPR_full_vax"] = (UsaDF["not_full_vax_pct"] + UsaDF["rna_signal_pct"]).round(2)
-UsaDF["UPR_boost_vax"] = (UsaDF["not_boost_vax_pct"] + UsaDF["rna_signal_pct"]).round(2)
+UsaDF["UPR_one_vax"] = (UsaDF["not_one_vax_earlier"] + UsaDF["rna_signal_pct"]).round(2)
+UsaDF["UPR_full_vax"] = (UsaDF["not_full_vax_earlier"] + UsaDF["rna_signal_pct"]).round(2)
+UsaDF["UPR_boost_vax"] = (UsaDF["not_boost_vax_earlier"] + UsaDF["rna_signal_pct"]).round(2)
 
 # Final dataset info
 
 print ("\nThe final dataset has " + str(UsaDF.shape[0]) + " rows from " + str(UsaDF["week"].min().date()) + " to " + str(UsaDF["week"].max().date()) )
+print ("\nVaccination look back = " + str(VAX_LOOK_BACK))
 print ("\nHospitalization look ahead = " + str(HOSP_LOOK_AHEAD))
 print ("\nMortality look ahead = " + str(DEATHS_LOOK_AHEAD))
+
+#### Plain wastewater RNA levels
 
 # Look at RNA vs hospital admissions
 
@@ -135,7 +142,51 @@ print ("\nRNA corr later ICU: " + str(UsaDF["copies_ml"].corr(UsaDF["icu_later"]
 UsaDF.plot.scatter(x="copies_ml", y="deaths_later")
 print ("\nRNA corr later deaths: " + str(UsaDF["copies_ml"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
 
-# TODO  Look at UPR vs the various outcomes
+#### My UPR, which is wastewater + vax
+
+# Look at UPR vs hospital admissions
+
+UsaDF.plot.scatter(x="UPR_one_vax", y="admits_later")
+print ("\nUPR 1 corr later hospital admits: " + str(UsaDF["UPR_one_vax"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+
+UsaDF.plot.scatter(x="UPR_full_vax", y="admits_later")
+print ("\nUPR Full corr later hospital admits: " + str(UsaDF["UPR_full_vax"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+
+UsaDF.plot.scatter(x="UPR_boost_vax", y="admits_later")
+print ("\nUPR Boost corr later hospital admits: " + str(UsaDF["UPR_boost_vax"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+
+# Look at UPR vs hospital beds
+
+UsaDF.plot.scatter(x="UPR_one_vax", y="beds_later")
+print ("\nUPR 1 corr later hospital beds: " + str(UsaDF["UPR_one_vax"].corr(UsaDF["beds_later"], method="spearman").round(3)))
+
+UsaDF.plot.scatter(x="UPR_full_vax", y="beds_later")
+print ("\nUPR Full corr later hospital beds: " + str(UsaDF["UPR_full_vax"].corr(UsaDF["beds_later"], method="spearman").round(3)))
+
+UsaDF.plot.scatter(x="UPR_boost_vax", y="beds_later")
+print ("\nUPR Boost corr later hospital beds: " + str(UsaDF["UPR_boost_vax"].corr(UsaDF["beds_later"], method="spearman").round(3)))
+
+# Look at UPR vs ICU beds
+
+UsaDF.plot.scatter(x="UPR_one_vax", y="icu_later")
+print ("\nUPR 1 corr later ICU: " + str(UsaDF["UPR_one_vax"].corr(UsaDF["icu_later"], method="spearman").round(3)))
+
+UsaDF.plot.scatter(x="UPR_full_vax", y="icu_later")
+print ("\nUPR Full corr later ICU: " + str(UsaDF["UPR_full_vax"].corr(UsaDF["icu_later"], method="spearman").round(3)))
+
+UsaDF.plot.scatter(x="UPR_boost_vax", y="icu_later")
+print ("\nUPR Boost corr later ICU: " + str(UsaDF["UPR_boost_vax"].corr(UsaDF["icu_later"], method="spearman").round(3)))
+
+# Look at UPR vs deaths
+
+UsaDF.plot.scatter(x="UPR_one_vax", y="deaths_later")
+print ("\nUPR 1 corr later deaths: " + str(UsaDF["UPR_one_vax"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
+
+UsaDF.plot.scatter(x="UPR_full_vax", y="deaths_later")
+print ("\nUPR Full corr later deaths: " + str(UsaDF["UPR_full_vax"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
+
+UsaDF.plot.scatter(x="UPR_boost_vax", y="deaths_later")
+print ("\nUPR Boost corr later deaths: " + str(UsaDF["UPR_boost_vax"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
 
 # Write out the chart data file. 
 
