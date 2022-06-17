@@ -69,11 +69,9 @@ CovidDF["not_one_vax_pct"] = (1.0 - CovidDF["metrics.vaccinationsInitiatedRatio"
 CovidDF["not_full_vax_pct"] = (1.0 - CovidDF["metrics.vaccinationsCompletedRatio"]) * 100 
 CovidDF["not_boost_vax_pct"] = (1.0 - CovidDF["metrics.vaccinationsAdditionalDoseRatio"]) * 100 
 
-# Create the DF for Flourish chart, by merging Biobot with Covid Act Now. Tweak as needed.
+# Create the starting DF for Flourish chart. Tweak as needed.
 
 UsaDF = BiobotDF.query("region=='Nationwide'")  # don't need the regional data
-UsaDF = UsaDF.merge(CovidDF, how='left', left_on="sampling_week", right_on="covid_facts_date")
-UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 UsaDF = UsaDF.rename(columns={"sampling_week":"week", "effective_concentration_rolling_average":"copies_ml"})
 UsaDF = UsaDF.query("week >= 20200401")   # not much useful data before this
 
