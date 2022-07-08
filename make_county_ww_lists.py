@@ -10,13 +10,11 @@ from urllib import request
 from sodapy import Socrata
 
 BIOBOT_DOWNLOAD = "https://github.com/biobotanalytics/covid19-wastewater-data/raw/master/wastewater_by_county.csv"
-#NWSS_DOWNLOAD = "https://data.cdc.gov/resource/2ew6-ywp6.csv?$$app_token=xu6pPGxUNKQBQn0r0wuMR1O95"
 NWSS_DATASET = "2ew6-ywp6"
 
 USA_COUNTIES_LOCAL = "/Users/chuck/Desktop/COVID Programming/fips2county.tsv"
 COUNTY_POP_LOCAL = "/Users/chuck/Desktop/COVID Programming/US Census/Population_Density_County.csv"
 BIOBOT_LOCAL = "/Users/chuck/Desktop/COVID Programming/Biobot/wastewater_by_county.csv"
-#NWSS_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/NWSS_Public_SARS-CoV-2_Wastewater_Metric_Data.tsv"  # i got this manually for now
 SVI_LOCAL = "/Users/chuck/Desktop/COVID Programming/CDC/DiabetesAtlasData_2018.csv"
 
 BIOBOT_LIST = "biobot_counties.txt"
@@ -135,7 +133,7 @@ MapDF = AllCountiesDF
 MapDF["WBE_WHO"] = "none"
 MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_only), "WBE_WHO"] = "biobot"
 MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(nwss_only), "WBE_WHO"] = "nwss"
-MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_nwss_intersection), "WBE_WHO"] = "biobot-nwss"
+MapDF.loc[MapDF["STATE_COUNTY_FIPS"].isin(biobot_nwss_intersection), "WBE_WHO"] = "nwss-biobot"
     
 # Add population density in the counties
 
