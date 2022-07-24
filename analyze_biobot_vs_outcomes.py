@@ -1,6 +1,8 @@
 
 # Do some analysis of Biobot wastewater data vs Covid outcome facts.
 
+# Chuck Connell, summer 2022
+
 import pandas as pd 
 import numpy as np
 from urllib import request
@@ -15,7 +17,7 @@ HOSP_LOOK_AHEAD = 14     # how far ahead of RNA data do we look for hospitalizat
 DEATHS_LOOK_AHEAD = 28    # how far ahead of RNA data do we look for mortality info
 
 RNA_TOP_COMPRESSION = 0.90  # to help assign percentile rank to RNA levels
-INFECTED_NOW = 0.90   # Portion of US pop that has gotten a natural infection of covid
+#INFECTED_NOW = 0.95   # Portion of US pop that has gotten a natural infection of covid
 
 VIRUS_START = "2020-03-01"  # for various date calculations
 VAX_START = "2020-12-13"
@@ -23,7 +25,7 @@ BOOST_START = "2021-08-15"
 
 BIOBOT_USA_CHART_DATA = "biobot_vs_outcomes_usa.tsv"
 
-# Calc overall months since start of the pandemic.
+# Calc overall weeks since start of the pandemic.
 
 pandemic_weeks = int(round(((pd.Timestamp.today() - pd.Timestamp(VIRUS_START)) / np.timedelta64(1, 'W'))))
 
@@ -92,13 +94,12 @@ UsaDF["vax_date"] = UsaDF["week"] -  pd.offsets.Day(VAX_LOOK_BACK)
 UsaDF["hosp_date"] = UsaDF["week"] +  pd.offsets.Day(HOSP_LOOK_AHEAD)
 UsaDF["deaths_date"] = UsaDF["week"] +  pd.offsets.Day(DEATHS_LOOK_AHEAD)
 
-# Make a column that estimates the % of people who have not been infected.
-# The assumption is that the number of people uninfected in the US is linear, from March 2020 until today. This is mostly true.
+# Make a column that estimates the % of pandemic time at the time of this water sample, then gets its inverse.
 
 UsaDF['pandemic_week'] = ((UsaDF.week - pd.Timestamp(VIRUS_START)) / np.timedelta64(1, 'W')).round().astype(int) 
-UsaDF["infected_pct"] = ((UsaDF['pandemic_week'] / pandemic_weeks) * 100 * INFECTED_NOW).round(2)
-UsaDF["not_infected_pct"] = 100 - UsaDF["infected_pct"] 
-UsaDF = UsaDF.drop(columns=["pandemic_week", "infected_pct"])
+UsaDF["pandemic_pct"] = ((UsaDF['pandemic_week'] / pandemic_weeks) * 100).round(2)
+UsaDF["pandemic_pct_inv"] = 100 - UsaDF["pandemic_pct"] 
+UsaDF = UsaDF.drop(columns=["pandemic_week", "pandemic_pct"])
 
 # Create DFs with just the vax, hospitalization and deaths info. We will use these for look-back and look-ahead info.
 
@@ -123,17 +124,18 @@ UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 UsaDF = UsaDF.merge(DeathsDF, how='inner', left_on="deaths_date", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 
+# Make my TPR metric -- % of pandemic time Plus RNA. Calendar time lumps together 
+# vaccination, plus boosting, plus natural infection, plus better medical treatment.
+# So worst case is 200 = 100% of pandemic still to go + 100% of the found RNA levels. 
+
+UsaDF["TPR"] = (UsaDF["pandemic_pct_inv"] + UsaDF["rna_signal_pct"]).round(2)
+
 # Make the UPR metrics -- Unvaxed Plus Rna. 
 # Worst case is 200 = 100% unvaxed + 100% of the found RNA levels.
 
 #UsaDF["UPR_one_vax"] = (UsaDF["not_one_vax_earlier"] + UsaDF["rna_signal_pct"]).round(2)
 #UsaDF["UPR_full_vax"] = (UsaDF["not_full_vax_earlier"] + UsaDF["rna_signal_pct"]).round(2)
-UsaDF["UPR_boost_vax"] = (UsaDF["not_boost_vax_earlier"] + UsaDF["rna_signal_pct"]).round(2)
-
-# Make NPR metric -- % Not Infected Plus Rna. This ignores vaccination.  
-# So worst case is 200 = 100% not infected + 100% of the found RNA levels. 
-
-UsaDF["NPR"] = (UsaDF["not_infected_pct"] + UsaDF["rna_signal_pct"]).round(2)
+#UsaDF["UPR_boost_vax"] = (UsaDF["not_boost_vax_earlier"] + UsaDF["rna_signal_pct"]).round(2)
 
 # Final dataset info
 
@@ -141,10 +143,9 @@ print ("\nThe final dataset has " + str(UsaDF.shape[0]) + " rows from " + str(Us
 print ("\nVaccination look back = " + str(VAX_LOOK_BACK))
 print ("\nHospitalization look ahead = " + str(HOSP_LOOK_AHEAD))
 print ("\nMortality look ahead = " + str(DEATHS_LOOK_AHEAD))
+#print ("\nPortion of US with previous infection = " + str(INFECTED_NOW))
 
-#### Plain wastewater RNA levels
-
-# Look at RNA vs hospital admissions
+# Look at wastewater RNA vs hospital admissions
 
 UsaDF.plot.scatter(x="copies_ml", y="admits_later")
 print ("\nRNA corr later hospital admits: " + str(UsaDF["copies_ml"].corr(UsaDF["admits_later"], method="spearman").round(3)))
@@ -164,73 +165,21 @@ print ("\nRNA corr later ICU: " + str(UsaDF["copies_ml"].corr(UsaDF["icu_later"]
 UsaDF.plot.scatter(x="copies_ml", y="deaths_later")
 print ("\nRNA corr later deaths: " + str(UsaDF["copies_ml"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
 
-#### My UPR, which is wastewater + vax
+# My TPR, which is "time in the pandemic" + wastewater RNA. 
 
-# Look at UPR vs hospital admissions
+UsaDF.plot.scatter(x="TPR", y="admits_later")
+print ("\nTPR corr later hospital admits: " + str(UsaDF["TPR"].corr(UsaDF["admits_later"], method="spearman").round(3)))
 
-#UsaDF.plot.scatter(x="UPR_one_vax", y="admits_later")
-#print ("\nUPR 1 corr later hospital admits: " + str(UsaDF["UPR_one_vax"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+UsaDF.plot.scatter(x="TPR", y="beds_later")
+print ("\nTPR corr later hospital beds: " + str(UsaDF["TPR"].corr(UsaDF["beds_later"], method="spearman").round(3)))
 
-#UsaDF.plot.scatter(x="UPR_full_vax", y="admits_later")
-#print ("\nUPR Full corr later hospital admits: " + str(UsaDF["UPR_full_vax"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+UsaDF.plot.scatter(x="TPR", y="icu_later")
+print ("\nTPR corr later ICU: " + str(UsaDF["TPR"].corr(UsaDF["icu_later"], method="spearman").round(3)))
 
-UsaDF.plot.scatter(x="UPR_boost_vax", y="admits_later")
-print ("\nUPR Boost corr later hospital admits: " + str(UsaDF["UPR_boost_vax"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+UsaDF.plot.scatter(x="TPR", y="deaths_later")
+print ("\nTPR corr later deaths: " + str(UsaDF["TPR"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
 
-# Look at UPR vs hospital beds
 
-#UsaDF.plot.scatter(x="UPR_one_vax", y="beds_later")
-#print ("\nUPR 1 corr later hospital beds: " + str(UsaDF["UPR_one_vax"].corr(UsaDF["beds_later"], method="spearman").round(3)))
-
-#UsaDF.plot.scatter(x="UPR_full_vax", y="beds_later")
-#print ("\nUPR Full corr later hospital beds: " + str(UsaDF["UPR_full_vax"].corr(UsaDF["beds_later"], method="spearman").round(3)))
-
-UsaDF.plot.scatter(x="UPR_boost_vax", y="beds_later")
-print ("\nUPR Boost corr later hospital beds: " + str(UsaDF["UPR_boost_vax"].corr(UsaDF["beds_later"], method="spearman").round(3)))
-
-# Look at UPR vs ICU beds
-
-#UsaDF.plot.scatter(x="UPR_one_vax", y="icu_later")
-#print ("\nUPR 1 corr later ICU: " + str(UsaDF["UPR_one_vax"].corr(UsaDF["icu_later"], method="spearman").round(3)))
-
-#UsaDF.plot.scatter(x="UPR_full_vax", y="icu_later")
-#print ("\nUPR Full corr later ICU: " + str(UsaDF["UPR_full_vax"].corr(UsaDF["icu_later"], method="spearman").round(3)))
-
-UsaDF.plot.scatter(x="UPR_boost_vax", y="icu_later")
-print ("\nUPR Boost corr later ICU: " + str(UsaDF["UPR_boost_vax"].corr(UsaDF["icu_later"], method="spearman").round(3)))
-
-# Look at UPR vs deaths
-
-#UsaDF.plot.scatter(x="UPR_one_vax", y="deaths_later")
-#print ("\nUPR 1 corr later deaths: " + str(UsaDF["UPR_one_vax"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
-
-#UsaDF.plot.scatter(x="UPR_full_vax", y="deaths_later")
-#print ("\nUPR Full corr later deaths: " + str(UsaDF["UPR_full_vax"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
-
-UsaDF.plot.scatter(x="UPR_boost_vax", y="deaths_later")
-print ("\nUPR Boost corr later deaths: " + str(UsaDF["UPR_boost_vax"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
-
-###### My NPR, which is wastewater + not infected
-
-# Look at NPR vs hospital admissions
-
-UsaDF.plot.scatter(x="NPR", y="admits_later")
-print ("\nNPR corr later hospital admits: " + str(UsaDF["NPR"].corr(UsaDF["admits_later"], method="spearman").round(3)))
-
-# Look at NPR vs hospital beds
-
-UsaDF.plot.scatter(x="NPR", y="beds_later")
-print ("\nNPR corr later hospital beds: " + str(UsaDF["NPR"].corr(UsaDF["beds_later"], method="spearman").round(3)))
-
-# Look at NPR vs ICU beds
-
-UsaDF.plot.scatter(x="NPR", y="icu_later")
-print ("\nNPR corr later ICU: " + str(UsaDF["NPR"].corr(UsaDF["icu_later"], method="spearman").round(3)))
-
-# Look at NPR vs deaths
-
-UsaDF.plot.scatter(x="NPR", y="deaths_later")
-print ("\nNPR corr later deaths: " + str(UsaDF["NPR"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
 
 # Write out the chart data file. 
 
