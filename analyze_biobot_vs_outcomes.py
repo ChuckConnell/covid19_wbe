@@ -83,7 +83,7 @@ CovidDF["not_boost_vax_pct"] = (1.0 - CovidDF["metrics.vaccinationsAdditionalDos
 
 # Create the starting DF for Flourish chart. Tweak as needed.
 
-UsaDF = BiobotDF.query("region=='Nationwide'")  # don't need the regional data
+UsaDF = BiobotDF.query("region=='Nationwide'")  # only need nationwide rollup
 UsaDF = UsaDF.rename(columns={"sampling_week":"week", "effective_concentration_rolling_average":"copies_ml"})
 UsaDF = UsaDF.query("week >= 20200401")   # not much useful data before this
 
@@ -113,22 +113,21 @@ VaxDF = CovidDF[["covid_facts_date", "not_one_vax_pct", "not_full_vax_pct", "not
 VaxDF = VaxDF.rename(columns={"not_one_vax_pct":"not_one_vax_earlier", "not_full_vax_pct":"not_full_vax_earlier", "not_boost_vax_pct":"not_boost_vax_earlier"})
 
 # Join these look-ahead and look-back facts with the main DF. 
-# Must use inner join for outcomes because recent water test dates do not yet have any matching outcome data.
 
 UsaDF = UsaDF.merge(VaxDF, how='left', left_on="vax_date", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 
-UsaDF = UsaDF.merge(HospDF, how='inner', left_on="hosp_date", right_on="covid_facts_date")
+UsaDF = UsaDF.merge(HospDF, how='left', left_on="hosp_date", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 
-UsaDF = UsaDF.merge(DeathsDF, how='inner', left_on="deaths_date", right_on="covid_facts_date")
+UsaDF = UsaDF.merge(DeathsDF, how='left', left_on="deaths_date", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 
 # Make my TPR metric -- % of pandemic time Plus RNA. Calendar time lumps together 
 # vaccination, plus boosting, plus natural infection, plus better medical treatment.
 # So worst case is 200 = 100% of pandemic still to go + 100% of the found RNA levels. 
 
-UsaDF["TPR"] = (UsaDF["pandemic_pct_inv"] + UsaDF["rna_signal_pct"]).round(2)
+UsaDF["RPT"] = (UsaDF["pandemic_pct_inv"] + UsaDF["rna_signal_pct"]).round(2)
 
 # Make the UPR metrics -- Unvaxed Plus Rna. 
 # Worst case is 200 = 100% unvaxed + 100% of the found RNA levels.
@@ -165,19 +164,19 @@ print ("\nRNA corr later ICU: " + str(UsaDF["copies_ml"].corr(UsaDF["icu_later"]
 UsaDF.plot.scatter(x="copies_ml", y="deaths_later")
 print ("\nRNA corr later deaths: " + str(UsaDF["copies_ml"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
 
-# My TPR, which is "time in the pandemic" + wastewater RNA. 
+# My RPT, which is wastewater RNA + "time in the pandemic". 
 
-UsaDF.plot.scatter(x="TPR", y="admits_later")
-print ("\nTPR corr later hospital admits: " + str(UsaDF["TPR"].corr(UsaDF["admits_later"], method="spearman").round(3)))
+UsaDF.plot.scatter(x="RPT", y="admits_later")
+print ("\nRPT corr later hospital admits: " + str(UsaDF["RPT"].corr(UsaDF["admits_later"], method="spearman").round(3)))
 
-UsaDF.plot.scatter(x="TPR", y="beds_later")
-print ("\nTPR corr later hospital beds: " + str(UsaDF["TPR"].corr(UsaDF["beds_later"], method="spearman").round(3)))
+UsaDF.plot.scatter(x="RPT", y="beds_later")
+print ("\nRPT corr later hospital beds: " + str(UsaDF["RPT"].corr(UsaDF["beds_later"], method="spearman").round(3)))
 
-UsaDF.plot.scatter(x="TPR", y="icu_later")
-print ("\nTPR corr later ICU: " + str(UsaDF["TPR"].corr(UsaDF["icu_later"], method="spearman").round(3)))
+UsaDF.plot.scatter(x="RPT", y="icu_later")
+print ("\nRPT corr later ICU: " + str(UsaDF["RPT"].corr(UsaDF["icu_later"], method="spearman").round(3)))
 
-UsaDF.plot.scatter(x="TPR", y="deaths_later")
-print ("\nTPR corr later deaths: " + str(UsaDF["TPR"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
+UsaDF.plot.scatter(x="RPT", y="deaths_later")
+print ("\nRPT corr later deaths: " + str(UsaDF["RPT"].corr(UsaDF["deaths_later"], method="spearman").round(3)))
 
 
 
