@@ -123,7 +123,7 @@ UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 UsaDF = UsaDF.merge(DeathsDF, how='left', left_on="deaths_date", right_on="covid_facts_date")
 UsaDF = UsaDF.drop(columns=["covid_facts_date"])
 
-# Make my TPR metric -- % of pandemic time Plus RNA. Calendar time lumps together 
+# Make my RPT metric -- % of pandemic time Plus RNA. Calendar time lumps together 
 # vaccination, plus boosting, plus natural infection, plus better medical treatment.
 # So worst case is 200 = 100% of pandemic still to go + 100% of the found RNA levels. 
 
