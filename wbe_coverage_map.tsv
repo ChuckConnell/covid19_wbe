@@ -57,7 +57,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 01111	AL | RANDOLPH | 01111	none	15.0	med	0.719	high
 01113	AL | RUSSELL | 01113	none	35.1	high	0.912	high
 01115	AL | ST. CLAIR | 01115	none	53.4	high	0.366	med
-01117	AL | SHELBY | 01117	none	103.9	high	0.117	low
+01117	AL | SHELBY | 01117	biobot	103.9	high	0.117	low
 01119	AL | SUMTER | 01119	none	5.5	low	0.956	high
 01121	AL | TALLADEGA | 01121	none	42.2	high	0.874	high
 01123	AL | TALLAPOOSA | 01123	none	21.9	med	0.886	high
@@ -71,6 +71,8 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 02020	AK | ANCHORAGE MUNICIPALITY | 02020	nwss	67.0	high	0.46	med
 02050	AK | BETHEL CENSUS AREA | 02050	none	0.2	low	0.975	high
 02060	AK | BRISTOL BAY BOROUGH | 02060	none	0.7	low	0.352	med
+02063	AK | CHUGACH CENSUS AREA | 02063	none				
+02066	AK | COPPER RIVER CENSUS AREA | 02066	none				
 02068	AK | DENALI BOROUGH | 02068	none	0.1	low	0.101	low
 02070	AK | DILLINGHAM CENSUS AREA | 02070	none	0.1	low	0.868	high
 02090	AK | FAIRBANKS NORTH STAR BOROUGH | 02090	none	5.2	low	0.345	med
@@ -91,7 +93,6 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 02220	AK | SITKA CITY AND BOROUGH | 02220	none	1.2	low	0.402	med
 02230	AK | SKAGWAY MUNICIPALITY | 02230	none	0.9	low	0.168	low
 02240	AK | SOUTHEAST FAIRBANKS CENSUS AREA | 02240	none	0.1	low	0.584	med
-02261	AK | VALDEZ-CORDOVA CENSUS AREA | 02261	none	0.1	low	0.27	low
 02275	AK | WRANGELL CITY AND BOROUGH | 02275	none	0.4	low	0.562	med
 02282	AK | YAKUTAT CITY AND BOROUGH | 02282	none	0.0	low	0.587	med
 02290	AK | YUKON-KOYUKUK CENSUS AREA | 02290	none	0.0	low	0.881	high
@@ -152,7 +153,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 05079	AR | LINCOLN | 05079	none	9.4	low	0.813	high
 05081	AR | LITTLE RIVER | 05081	none	9.0	low	0.631	med
 05083	AR | LOGAN | 05083	none	11.9	med	0.804	high
-05085	AR | LONOKE | 05085	none	36.2	high	0.331	low
+05085	AR | LONOKE | 05085	nwss-biobot	36.2	high	0.331	low
 05087	AR | MADISON | 05087	none	7.4	low	0.654	med
 05089	AR | MARION | 05089	none	10.6	med	0.518	med
 05091	AR | MILLER | 05091	none	27.0	med	0.912	high
@@ -169,7 +170,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 05113	AR | POLK | 05113	none	9.1	low	0.895	high
 05115	AR | POPE | 05115	none	30.2	med	0.794	high
 05117	AR | PRAIRIE | 05117	none	4.9	low	0.655	med
-05119	AR | PULASKI | 05119	biobot	200.2	high	0.629	med
+05119	AR | PULASKI | 05119	nwss-biobot	200.2	high	0.629	med
 05121	AR | RANDOLPH | 05121	none	10.4	med	0.717	high
 05123	AR | ST. FRANCIS | 05123	none	16.0	med	0.969	high
 05125	AR | SALINE | 05125	none	63.0	high	0.332	low
@@ -185,13 +186,13 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 05145	AR | WHITE | 05145	none	29.4	med	0.745	high
 05147	AR | WOODRUFF | 05147	none	4.4	low	0.849	high
 05149	AR | YELL | 05149	none	9.0	low	0.878	high
-06001	CA | ALAMEDA | 06001	nwss	860.8	high	0.47	med
+06001	CA | ALAMEDA | 06001	nwss-biobot	860.8	high	0.47	med
 06003	CA | ALPINE | 06003	none	0.6	low	0.729	high
 06005	CA | AMADOR | 06005	none	24.6	med	0.533	med
 06007	CA | BUTTE | 06007	none	53.6	high	0.806	high
 06009	CA | CALAVERAS | 06009	none	17.1	med	0.235	low
 06011	CA | COLUSA | 06011	none	7.2	low	0.744	high
-06013	CA | CONTRA COSTA | 06013	nwss	610.2	high	0.406	med
+06013	CA | CONTRA COSTA | 06013	nwss-biobot	610.2	high	0.406	med
 06015	CA | DEL NORTE | 06015	none	10.5	med	0.971	high
 06017	CA | EL DORADO | 06017	nwss-biobot	42.2	high	0.184	low
 06019	CA | FRESNO | 06019	nwss	63.4	high	0.961	high
@@ -211,7 +212,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 06047	CA | MERCED | 06047	nwss	53.7	high	0.972	high
 06049	CA | MODOC | 06049	none	0.9	low	0.752	high
 06051	CA | MONO | 06051	none	1.8	low	0.141	low
-06053	CA | MONTEREY | 06053	biobot	51.0	high	0.799	high
+06053	CA | MONTEREY | 06053	nwss-biobot	51.0	high	0.799	high
 06055	CA | NAPA | 06055	none	72.5	high	0.505	med
 06057	CA | NEVADA | 06057	none	39.9	high	0.204	low
 06059	CA | ORANGE | 06059	nwss	1541.0	high	0.419	med
@@ -220,7 +221,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 06065	CA | RIVERSIDE | 06065	nwss-biobot	127.7	high	0.794	high
 06067	CA | SACRAMENTO | 06067	nwss-biobot	603.9	high	0.734	high
 06069	CA | SAN BENITO | 06069	nwss	16.5	med	0.524	med
-06071	CA | SAN BERNARDINO | 06071	nwss	41.1	high	0.901	high
+06071	CA | SAN BERNARDINO | 06071	nwss-biobot	41.1	high	0.901	high
 06073	CA | SAN DIEGO | 06073	nwss-biobot	303.0	high	0.56	med
 06075	CA | SAN FRANCISCO | 06075	nwss	7168.2	high	0.391	med
 06077	CA | SAN JOAQUIN | 06077	none	203.0	high	0.889	high
@@ -303,7 +304,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 08113	CO | SAN MIGUEL | 08113	nwss	2.4	low	0.033	low
 08115	CO | SEDGWICK | 08115	none	1.7	low	0.694	high
 08117	CO | SUMMIT | 08117	nwss	19.3	med	0.071	low
-08119	CO | TELLER | 08119	none	16.7	med	0.073	low
+08119	CO | TELLER | 08119	nwss	16.7	med	0.073	low
 08121	CO | WASHINGTON | 08121	none	0.7	low	0.282	low
 08123	CO | WELD | 08123	nwss	28.6	med	0.399	med
 08125	CO | YUMA | 08125	none	1.6	low	0.564	med
@@ -346,7 +347,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 12051	FL | HENDRY | 12051	none	13.4	med	0.994	high
 12053	FL | HERNANDO | 12053	none	149.2	high	0.549	med
 12055	FL | HIGHLANDS | 12055	none	38.8	high	0.873	high
-12057	FL | HILLSBOROUGH | 12057	biobot	521.0	high	0.67	high
+12057	FL | HILLSBOROUGH | 12057	nwss-biobot	521.0	high	0.67	high
 12059	FL | HOLMES | 12059	none	15.7	med	0.935	high
 12061	FL | INDIAN RIVER | 12061	none	115.9	high	0.396	med
 12063	FL | JACKSON | 12063	none	20.4	med	0.958	high
@@ -360,7 +361,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 12079	FL | MADISON | 12079	none	10.2	med	0.961	high
 12081	FL | MANATEE | 12081	none	194.2	high	0.52	med
 12083	FL | MARION | 12083	none	84.7	high	0.754	high
-12085	FL | MARTIN | 12085	none	111.9	high	0.399	med
+12085	FL | MARTIN | 12085	nwss	111.9	high	0.399	med
 12086	FL | MIAMI-DADE | 12086	nwss-biobot	552.2	high	0.818	high
 12087	FL | MONROE | 12087	nwss	30.0	med	0.456	med
 12089	FL | NASSAU | 12089	none	48.0	high	0.246	low
@@ -368,7 +369,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 12093	FL | OKEECHOBEE | 12093	none	20.4	med	0.946	high
 12095	FL | ORANGE | 12095	nwss-biobot	565.2	high	0.669	high
 12097	FL | OSCEOLA | 12097	none	98.5	high	0.818	high
-12099	FL | PALM BEACH | 12099	biobot	284.1	high	0.559	med
+12099	FL | PALM BEACH | 12099	nwss-biobot	284.1	high	0.559	med
 12101	FL | PASCO | 12101	none	264.0	high	0.634	med
 12103	FL | PINELLAS | 12103	nwss-biobot	1351.0	high	0.517	med
 12105	FL | POLK | 12105	none	143.7	high	0.904	high
@@ -545,8 +546,8 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 13317	GA | WILKES | 13317	none	8.1	low	0.756	high
 13319	GA | WILKINSON | 13319	none	7.8	low	0.787	high
 13321	GA | WORTH | 13321	none	14.0	med	0.736	high
-15001	HI | HAWAII | 15001	nwss	18.9	med	0.577	med
-15003	HI | HONOLULU | 15003	nwss	635.0	high	0.472	med
+15001	HI | HAWAII | 15001	nwss-biobot	18.9	med	0.577	med
+15003	HI | HONOLULU | 15003	nwss-biobot	635.0	high	0.472	med
 15005	HI | KALAWAO | 15005	none	2.4	low	0.316	low
 15007	HI | KAUAI | 15007	nwss-biobot	44.5	high	0.31	low
 15009	HI | MAUI | 15009	nwss	54.9	high	0.388	med
@@ -569,7 +570,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 16033	ID | CLARK | 16033	none	0.2	low	0.891	high
 16035	ID | CLEARWATER | 16035	none	1.4	low	0.44	med
 16037	ID | CUSTER | 16037	none	0.3	low	0.437	med
-16039	ID | ELMORE | 16039	none	3.3	low	0.588	med
+16039	ID | ELMORE | 16039	nwss	3.3	low	0.588	med
 16041	ID | FRANKLIN | 16041	none	7.7	low	0.141	low
 16043	ID | FREMONT | 16043	none	2.7	low	0.514	med
 16045	ID | GEM | 16045	none	11.8	med	0.663	med
@@ -705,7 +706,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 18013	IN | BROWN | 18013	none	18.6	med	0.06	low
 18015	IN | CARROLL | 18015	none	20.7	med	0.118	low
 18017	IN | CASS | 18017	none	35.7	high	0.72	high
-18019	IN | CLARK | 18019	none	119.8	high	0.255	low
+18019	IN | CLARK | 18019	nwss	119.8	high	0.255	low
 18021	IN | CLAY | 18021	none	28.4	med	0.334	med
 18023	IN | CLINTON | 18023	none	30.8	med	0.571	med
 18025	IN | CRAWFORD | 18025	none	13.4	med	0.389	med
@@ -732,14 +733,14 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 18067	IN | HOWARD | 18067	nwss-biobot	108.6	high	0.482	med
 18069	IN | HUNTINGTON | 18069	nwss-biobot	36.7	high	0.125	low
 18071	IN | JACKSON | 18071	none	33.3	high	0.539	med
-18073	IN | JASPER | 18073	none	23.1	med	0.268	low
+18073	IN | JASPER | 18073	nwss	23.1	med	0.268	low
 18075	IN | JAY | 18075	none	21.1	med	0.675	high
 18077	IN | JEFFERSON | 18077	nwss-biobot	34.5	high	0.441	med
 18079	IN | JENNINGS | 18079	none	28.4	med	0.385	med
 18081	IN | JOHNSON | 18081	none	182.6	high	0.142	low
 18083	IN | KNOX | 18083	none	28.0	med	0.593	med
 18085	IN | KOSCIUSKO | 18085	nwss-biobot	57.3	high	0.461	med
-18087	IN | LAGRANGE | 18087	none	39.6	high	0.371	med
+18087	IN | LAGRANGE | 18087	biobot	39.6	high	0.371	med
 18089	IN | LAKE | 18089	nwss-biobot	376.8	high	0.725	high
 18091	IN | LAPORTE | 18091	none	71.3	high	0.722	high
 18093	IN | LAWRENCE | 18093	none	39.2	high	0.275	low
@@ -752,7 +753,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 18107	IN | MONTGOMERY | 18107	none	29.3	med	0.368	med
 18109	IN | MORGAN | 18109	none	66.7	high	0.216	low
 18111	IN | NEWTON | 18111	none	13.5	med	0.337	med
-18113	IN | NOBLE | 18113	none	44.6	high	0.474	med
+18113	IN | NOBLE | 18113	nwss	44.6	high	0.474	med
 18115	IN | OHIO | 18115	none	26.4	med	0.025	low
 18117	IN | ORANGE | 18117	none	18.9	med	0.646	med
 18119	IN | OWEN | 18119	none	20.9	med	0.346	med
@@ -839,7 +840,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 19097	IA | JACKSON | 19097	none	11.8	med	0.127	low
 19099	IA | JASPER | 19099	none	19.5	med	0.255	low
 19101	IA | JEFFERSON | 19101	none	16.0	med	0.49	med
-19103	IA | JOHNSON | 19103	nwss	92.6	high	0.268	low
+19103	IA | JOHNSON | 19103	nwss-biobot	92.6	high	0.268	low
 19105	IA | JONES | 19105	none	13.8	med	0.192	low
 19107	IA | KEOKUK | 19107	none	6.8	low	0.04	low
 19109	IA | KOSSUTH | 19109	none	6.0	low	0.105	low
@@ -1184,10 +1185,10 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 23011	ME | KENNEBEC | 23011	biobot	54.1	high	0.379	med
 23013	ME | KNOX | 23013	nwss-biobot	42.1	high	0.148	low
 23015	ME | LINCOLN | 23015	nwss-biobot	28.9	med	0.114	low
-23017	ME | OXFORD | 23017	nwss	10.7	med	0.373	med
+23017	ME | OXFORD | 23017	nwss-biobot	10.7	med	0.373	med
 23019	ME | PENOBSCOT | 23019	biobot	17.2	med	0.453	med
 23021	ME | PISCATAQUIS | 23021	nwss-biobot	1.6	low	0.49	med
-23023	ME | SAGADAHOC | 23023	nwss	53.6	high	0.052	low
+23023	ME | SAGADAHOC | 23023	nwss-biobot	53.6	high	0.052	low
 23025	ME | SOMERSET | 23025	none	5.0	low	0.622	med
 23027	ME | WALDO | 23027	biobot	20.8	med	0.22	low
 23029	ME | WASHINGTON | 23029	biobot	4.8	low	0.644	med
@@ -1206,10 +1207,10 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 24025	MD | HARFORD | 24025	none	221.7	high	0.093	low
 24027	MD | HOWARD | 24027	nwss	485.2	high	0.131	low
 24029	MD | KENT | 24029	none	27.3	med	0.428	med
-24031	MD | MONTGOMERY | 24031	none	814.5	high	0.326	low
-24033	MD | PRINCE GEORGE'S | 24033	none	724.9	high	0.626	med
+24031	MD | MONTGOMERY | 24031	nwss	814.5	high	0.326	low
+24033	MD | PRINCE GEORGE'S | 24033	nwss	724.9	high	0.626	med
 24035	MD | QUEEN ANNE'S | 24035	none	51.3	high	0.022	low
-24037	MD | ST. MARY'S | 24037	none	120.1	high	0.209	low
+24037	MD | ST. MARY'S | 24037	biobot	120.1	high	0.209	low
 24039	MD | SOMERSET | 24039	none	31.1	high	0.898	high
 24041	MD | TALBOT | 24041	none	53.5	high	0.133	low
 24043	MD | WASHINGTON | 24043	nwss	126.4	high	0.614	med
@@ -1222,11 +1223,11 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 25007	MA | DUKES | 25007	none	64.8	high	0.01	low
 25009	MA | ESSEX | 25009	biobot	612.3	high	0.508	med
 25011	MA | FRANKLIN | 25011	biobot	39.2	high	0.21	low
-25013	MA | HAMPDEN | 25013	nwss	293.6	high	0.823	high
+25013	MA | HAMPDEN | 25013	nwss-biobot	293.6	high	0.823	high
 25015	MA | HAMPSHIRE | 25015	biobot	118.0	high	0.232	low
 25017	MA | MIDDLESEX | 25017	nwss-biobot	753.1	high	0.226	low
 25019	MA | NANTUCKET | 25019	biobot	92.9	high	0.027	low
-25021	MA | NORFOLK | 25021	nwss	680.6	high	0.209	low
+25021	MA | NORFOLK | 25021	none	680.6	high	0.209	low
 25023	MA | PLYMOUTH | 25023	biobot	300.1	high	0.23	low
 25025	MA | SUFFOLK | 25025	nwss-biobot	5248.5	high	0.738	high
 25027	MA | WORCESTER | 25027	nwss-biobot	210.2	high	0.41	med
@@ -1262,7 +1263,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 26059	MI | HILLSDALE | 26059	none	29.6	med	0.502	med
 26061	MI | HOUGHTON | 26061	nwss	13.9	med	0.496	med
 26063	MI | HURON | 26063	nwss	14.6	med	0.274	low
-26065	MI | INGHAM | 26065	none	201.0	high	0.574	med
+26065	MI | INGHAM | 26065	nwss	201.0	high	0.574	med
 26067	MI | IONIA | 26067	none	43.4	high	0.478	med
 26069	MI | IOSCO | 26069	nwss	17.8	med	0.449	med
 26071	MI | IRON | 26071	none	3.7	low	0.282	low
@@ -1435,7 +1436,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 28065	MS | JEFFERSON DAVIS | 28065	none	10.9	med	0.844	high
 28067	MS | JONES | 28067	none	38.0	high	0.892	high
 28069	MS | KEMPER | 28069	none	5.1	low	0.927	high
-28071	MS | LAFAYETTE | 28071	none	32.7	high	0.51	med
+28071	MS | LAFAYETTE | 28071	biobot	32.7	high	0.51	med
 28073	MS | LAMAR | 28073	none	47.6	high	0.531	med
 28075	MS | LAUDERDALE | 28075	none	42.4	high	0.928	high
 28077	MS | LAWRENCE | 28077	none	11.3	med	0.663	med
@@ -1612,7 +1613,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 30025	MT | FALLON | 30025	none	0.7	low	0.022	low
 30027	MT | FERGUS | 30027	none	1.0	low	0.238	low
 30029	MT | FLATHEAD | 30029	none	7.4	low	0.092	low
-30031	MT | GALLATIN | 30031	none	15.5	med	0.043	low
+30031	MT | GALLATIN | 30031	nwss	15.5	med	0.043	low
 30033	MT | GARFIELD | 30033	none	0.1	low	0.008	low
 30035	MT | GLACIER | 30035	none	1.8	low	0.858	high
 30037	MT | GOLDEN VALLEY | 30037	none	0.2	low	0.052	low
@@ -1646,7 +1647,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 30093	MT | SILVER BOW | 30093	none	18.7	med	0.526	med
 30095	MT | STILLWATER | 30095	none	2.0	low	0.036	low
 30097	MT | SWEET GRASS | 30097	none	0.8	low	0.009	low
-30099	MT | TETON | 30099	none	1.0	low	0.298	low
+30099	MT | TETON | 30099	biobot	1.0	low	0.298	low
 30101	MT | TOOLE | 30101	none	1.0	low	0.477	med
 30103	MT | TREASURE | 30103	none	0.3	low	0.057	low
 30105	MT | VALLEY | 30105	none	0.6	low	0.116	low
@@ -1730,7 +1731,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 31149	NE | ROCK | 31149	none	0.5	low	0.009	low
 31151	NE | SALINE | 31151	none	9.6	med	0.598	med
 31153	NE | SARPY | 31153	nwss	289.1	high	0.097	low
-31155	NE | SAUNDERS | 31155	none	10.8	med	0.042	low
+31155	NE | SAUNDERS | 31155	nwss-biobot	10.8	med	0.042	low
 31157	NE | SCOTTS BLUFF | 31157	nwss	18.9	med	0.568	med
 31159	NE | SEWARD | 31159	none	11.6	med	0.047	low
 31161	NE | SHERIDAN | 31161	none	0.8	low	0.597	med
@@ -1781,11 +1782,11 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 34011	NJ | CUMBERLAND | 34011	none	122.5	high	0.959	high
 34013	NJ | ESSEX | 34013	nwss-biobot	2430.1	high	0.84	high
 34015	NJ | GLOUCESTER | 34015	none	348.8	high	0.168	low
-34017	NJ | HUDSON | 34017	nwss	5589.1	high	0.642	med
+34017	NJ | HUDSON | 34017	nwss-biobot	5589.1	high	0.642	med
 34019	NJ | HUNTERDON | 34019	none	112.9	high	0.026	low
 34021	NJ | MERCER | 34021	none	634.4	high	0.558	med
 34023	NJ | MIDDLESEX | 34023	nwss-biobot	1032.2	high	0.466	med
-34025	NJ | MONMOUTH | 34025	biobot	514.1	high	0.16	low
+34025	NJ | MONMOUTH | 34025	nwss-biobot	514.1	high	0.16	low
 34027	NJ | MORRIS | 34027	none	414.5	high	0.12	low
 34029	NJ | OCEAN | 34029	none	363.7	high	0.335	med
 34031	NJ | PASSAIC | 34031	nwss-biobot	1046.2	high	0.776	high
@@ -1818,7 +1819,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 35039	NM | RIO ARRIBA | 35039	none	2.6	low		
 35041	NM | ROOSEVELT | 35041	none	3.0	low	0.943	high
 35043	NM | SANDOVAL | 35043	nwss	14.6	med	0.482	med
-35045	NM | SAN JUAN | 35045	none	8.9	low	0.919	high
+35045	NM | SAN JUAN | 35045	nwss	8.9	low	0.919	high
 35047	NM | SAN MIGUEL | 35047	none	2.3	low	0.986	high
 35049	NM | SANTA FE | 35049	none	30.1	med	0.526	med
 35051	NM | SIERRA | 35051	none	1.0	low	0.915	high
@@ -1831,17 +1832,17 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 36003	NY | ALLEGANY | 36003	none	17.6	med	0.582	med
 36005	NY | BRONX | 36005	nwss	13202.5	high	0.993	high
 36007	NY | BROOME | 36007	nwss	106.3	high	0.617	med
-36009	NY | CATTARAUGUS | 36009	nwss	22.9	med	0.728	high
+36009	NY | CATTARAUGUS | 36009	none	22.9	med	0.728	high
 36011	NY | CAYUGA | 36011	nwss	43.5	high	0.502	med
-36013	NY | CHAUTAUQUA | 36013	nwss	47.2	high	0.725	high
+36013	NY | CHAUTAUQUA | 36013	none	47.2	high	0.725	high
 36015	NY | CHEMUNG | 36015	nwss	81.3	high	0.485	med
 36017	NY | CHENANGO | 36017	nwss	20.9	med	0.565	med
-36019	NY | CLINTON | 36019	none	30.1	med	0.531	med
+36019	NY | CLINTON | 36019	nwss	30.1	med	0.531	med
 36021	NY | COLUMBIA | 36021	nwss	37.1	high	0.385	med
 36023	NY | CORTLAND | 36023	nwss	37.3	high	0.345	med
 36025	NY | DELAWARE | 36025	nwss	12.2	med	0.633	med
 36027	NY | DUTCHESS | 36027	nwss	142.6	high	0.421	med
-36029	NY | ERIE | 36029	nwss	340.6	high	0.414	med
+36029	NY | ERIE | 36029	none	340.6	high	0.414	med
 36031	NY | ESSEX | 36031	nwss	8.1	low	0.387	med
 36033	NY | FRANKLIN | 36033	nwss	12.0	med	0.707	high
 36035	NY | FULTON | 36035	nwss	41.9	high	0.501	med
@@ -1928,7 +1929,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 37073	NC | GATES | 37073	none	13.1	med	0.357	med
 37075	NC | GRAHAM | 37075	none	11.3	med	0.634	med
 37077	NC | GRANVILLE | 37077	none	42.7	high	0.656	med
-37079	NC | GREENE | 37079	none	30.4	med	0.992	high
+37079	NC | GREENE | 37079	nwss	30.4	med	0.992	high
 37081	NC | GUILFORD | 37081	nwss	313.0	high	0.637	med
 37083	NC | HALIFAX | 37083	nwss	27.6	med	0.965	high
 37085	NC | HARNETT | 37085	none	84.6	high	0.787	high
@@ -2145,7 +2146,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 40025	OK | CIMARRON | 40025	none	0.5	low	0.448	med
 40027	OK | CLEVELAND | 40027	none	198.3	high	0.344	med
 40029	OK | COAL | 40029	none	4.2	low	0.826	high
-40031	OK | COMANCHE | 40031	nwss	44.3	high	0.835	high
+40031	OK | COMANCHE | 40031	nwss-biobot	44.3	high	0.835	high
 40033	OK | COTTON | 40033	none	3.6	low	0.674	high
 40035	OK | CRAIG | 40035	none	7.3	low	0.854	high
 40037	OK | CREEK | 40037	none	28.9	med	0.49	med
@@ -2251,8 +2252,8 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 42011	PA | BERKS | 42011	none	187.8	high	0.616	med
 42013	PA | BLAIR | 42013	none	90.9	high	0.398	med
 42015	PA | BRADFORD | 42015	none	20.6	med	0.347	med
-42017	PA | BUCKS | 42017	none	400.1	high	0.083	low
-42019	PA | BUTLER | 42019	nwss	91.3	high	0.079	low
+42017	PA | BUCKS | 42017	nwss-biobot	400.1	high	0.083	low
+42019	PA | BUTLER | 42019	nwss-biobot	91.3	high	0.079	low
 42021	PA | CAMBRIA | 42021	none	75.5	high	0.489	med
 42023	PA | CAMERON | 42023	none	4.6	low	0.301	low
 42025	PA | CARBON | 42025	none	64.7	high	0.305	low
@@ -2263,14 +2264,14 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 42035	PA | CLINTON | 42035	none	17.0	med	0.486	med
 42037	PA | COLUMBIA | 42037	none	52.9	high	0.277	low
 42039	PA | CRAWFORD | 42039	none	32.9	high	0.506	med
-42041	PA | CUMBERLAND | 42041	none	175.1	high	0.162	low
-42043	PA | DAUPHIN | 42043	biobot	201.9	high	0.498	med
-42045	PA | DELAWARE | 42045	none	1183.7	high	0.413	med
+42041	PA | CUMBERLAND | 42041	nwss	175.1	high	0.162	low
+42043	PA | DAUPHIN | 42043	nwss-biobot	201.9	high	0.498	med
+42045	PA | DELAWARE | 42045	nwss	1183.7	high	0.413	med
 42047	PA | ELK | 42047	none	14.3	med	0.117	low
-42049	PA | ERIE | 42049	biobot	133.3	high	0.619	med
+42049	PA | ERIE | 42049	nwss-biobot	133.3	high	0.619	med
 42051	PA | FAYETTE | 42051	none	64.6	high	0.625	med
 42053	PA | FOREST | 42053	none	6.6	low	0.712	high
-42055	PA | FRANKLIN | 42055	biobot	76.9	high	0.337	med
+42055	PA | FRANKLIN | 42055	nwss-biobot	76.9	high	0.337	med
 42057	PA | FULTON | 42057	none	12.8	med	0.22	low
 42059	PA | GREENE | 42059	none	24.9	med	0.435	med
 42061	PA | HUNTINGDON | 42061	none	20.1	med	0.491	med
@@ -2287,7 +2288,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 42083	PA | MCKEAN | 42083	none	16.5	med	0.546	med
 42085	PA | MERCER | 42085	none	64.7	high	0.542	med
 42087	PA | MIFFLIN | 42087	none	43.5	high	0.472	med
-42089	PA | MONROE | 42089	none	106.4	high	0.306	low
+42089	PA | MONROE | 42089	nwss	106.4	high	0.306	low
 42091	PA | MONTGOMERY | 42091	nwss-biobot	656.6	high	0.165	low
 42093	PA | MONTOUR | 42093	none	54.2	high	0.311	low
 42095	PA | NORTHAMPTON | 42095	none	315.2	high	0.288	low
@@ -2307,9 +2308,9 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 42123	PA | WARREN | 42123	none	17.5	med	0.213	low
 42125	PA | WASHINGTON | 42125	none	93.5	high	0.169	low
 42127	PA | WAYNE | 42127	none	27.4	med	0.263	low
-42129	PA | WESTMORELAND | 42129	biobot	133.2	high	0.138	low
+42129	PA | WESTMORELAND | 42129	nwss-biobot	133.2	high	0.138	low
 42131	PA | WYOMING | 42131	none	26.8	med	0.112	low
-42133	PA | YORK | 42133	none	189.6	high	0.329	low
+42133	PA | YORK | 42133	nwss	189.6	high	0.329	low
 44001	RI | BRISTOL | 44001	nwss	782.2	high	0.124	low
 44003	RI | KENT | 44003	nwss-biobot	375.3	high	0.152	low
 44005	RI | NEWPORT | 44005	none	313.1	high	0.179	low
@@ -2335,7 +2336,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 45035	SC | DORCHESTER | 45035	none	105.6	high	0.419	med
 45037	SC | EDGEFIELD | 45037	none	20.6	med	0.848	high
 45039	SC | FAIRFIELD | 45039	none	12.8	med	0.748	high
-45041	SC | FLORENCE | 45041	nwss	66.8	high	0.899	high
+45041	SC | FLORENCE | 45041	nwss-biobot	66.8	high	0.899	high
 45043	SC | GEORGETOWN | 45043	nwss-biobot	29.2	med	0.677	high
 45045	SC | GREENVILLE | 45045	nwss-biobot	245.1	high	0.504	med
 45047	SC | GREENWOOD | 45047	nwss-biobot	59.7	high	0.934	high
@@ -2509,7 +2510,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 47159	TN | SMITH | 47159	none	23.9	med	0.261	low
 47161	TN | STEWART | 47161	none	11.2	med	0.409	med
 47163	TN | SULLIVAN | 47163	none	146.4	high	0.541	med
-47165	TN | SUMNER | 47165	none	130.9	high	0.206	low
+47165	TN | SUMNER | 47165	nwss-biobot	130.9	high	0.206	low
 47167	TN | TIPTON | 47167	none	51.8	high	0.45	med
 47169	TN | TROUSDALE | 47169	none	32.3	high	0.522	med
 47171	TN | UNICOI | 47171	none	36.9	high	0.798	high
@@ -2807,7 +2808,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 49057	UT | WEBER | 49057	nwss	166.0	high	0.427	med
 50001	VT | ADDISON | 50001	none	18.6	med	0.096	low
 50003	VT | BENNINGTON | 50003	nwss	20.5	med	0.292	low
-50005	VT | CALEDONIA | 50005	none	18.1	med	0.267	low
+50005	VT | CALEDONIA | 50005	nwss	18.1	med	0.267	low
 50007	VT | CHITTENDEN | 50007	nwss-biobot	116.6	high	0.183	low
 50009	VT | ESSEX | 50009	none	3.6	low	0.207	low
 50011	VT | FRANKLIN | 50011	nwss	29.9	med	0.111	low
@@ -2911,7 +2912,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 51187	VA | WARREN | 51187	none	71.0	high	0.256	low
 51191	VA | WASHINGTON | 51191	nwss	37.4	high	0.365	med
 51193	VA | WESTMORELAND | 51193	none	29.7	med	0.292	low
-51195	VA | WISE | 51195	nwss	37.3	high	0.86	high
+51195	VA | WISE | 51195	nwss-biobot	37.3	high	0.86	high
 51197	VA | WYTHE | 51197	none	24.2	med	0.396	med
 51199	VA | YORK | 51199	nwss	249.5	high	0.2	low
 51510	VA | ALEXANDRIA CITY | 51510	nwss-biobot	4046.5	high	0.2	low
@@ -2930,12 +2931,12 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 51640	VA | GALAX CITY | 51640	none	311.2	high	0.984	high
 51650	VA | HAMPTON CITY | 51650	nwss	1018.3	high	0.668	high
 51660	VA | HARRISONBURG CITY | 51660	nwss-biobot	1188.9	high	0.793	high
-51670	VA | HOPEWELL CITY | 51670	none	835.5	high	0.941	high
+51670	VA | HOPEWELL CITY | 51670	nwss	835.5	high	0.941	high
 51678	VA | LEXINGTON CITY | 51678	none	1098.4	high	0.323	low
 51680	VA | LYNCHBURG CITY | 51680	none	631.7	high	0.737	high
 51683	VA | MANASSAS CITY | 51683	nwss	1625.1	high	0.445	med
 51685	VA | MANASSAS PARK CITY | 51685	nwss	2511.7	high	0.528	med
-51690	VA | MARTINSVILLE CITY | 51690	none	461.7	high	0.91	high
+51690	VA | MARTINSVILLE CITY | 51690	nwss	461.7	high	0.91	high
 51700	VA | NEWPORT NEWS CITY | 51700	nwss	1006.3	high	0.816	high
 51710	VA | NORFOLK CITY | 51710	nwss	1779.8	high	0.772	high
 51720	VA | NORTON CITY | 51720	none	206.0	high	0.905	high
@@ -2964,10 +2965,10 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 53019	WA | FERRY | 53019	none	1.3	low	0.822	high
 53021	WA | FRANKLIN | 53021	nwss	28.2	med	0.869	high
 53023	WA | GARFIELD | 53023	none	1.2	low	0.183	low
-53025	WA | GRANT | 53025	none	13.7	med	0.845	high
+53025	WA | GRANT | 53025	nwss	13.7	med	0.845	high
 53027	WA | GRAYS HARBOR | 53027	none	14.6	med	0.839	high
 53029	WA | ISLAND | 53029	none	151.2	high	0.186	low
-53031	WA | JEFFERSON | 53031	none	6.6	low	0.241	low
+53031	WA | JEFFERSON | 53031	nwss	6.6	low	0.241	low
 53033	WA | KING | 53033	nwss	394.9	high	0.285	low
 53035	WA | KITSAP | 53035	none	256.5	high	0.282	low
 53037	WA | KITTITAS | 53037	none	7.5	low	0.283	low
@@ -3099,7 +3100,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 55099	WI | PRICE | 55099	none	4.2	low	0.16	low
 55101	WI | RACINE | 55101	nwss	226.8	high	0.455	med
 55103	WI | RICHLAND | 55103	none	11.6	med	0.307	low
-55105	WI | ROCK | 55105	none	87.0	high	0.456	med
+55105	WI | ROCK | 55105	nwss	87.0	high	0.456	med
 55107	WI | RUSK | 55107	none	6.0	low	0.346	med
 55109	WI | ST. CROIX | 55109	nwss	47.0	high	0.015	low
 55111	WI | SAUK | 55111	none	29.5	med	0.234	low
@@ -3137,7 +3138,7 @@ FIPS	STATE_COUNTY_FIPS	WBE_WHO	DensitySqKm	DensityCategory	SVI	SviCategory
 56033	WY | SHERIDAN | 56033	biobot	4.6	low	0.09	low
 56035	WY | SUBLETTE | 56035	none	0.8	low	0.029	low
 56037	WY | SWEETWATER | 56037	biobot	1.6	low	0.37	med
-56039	WY | TETON | 56039	none	2.2	low	0.113	low
+56039	WY | TETON | 56039	biobot	2.2	low	0.113	low
 56041	WY | UINTA | 56041	none	3.8	low	0.452	med
 56043	WY | WASHAKIE | 56043	none	1.4	low	0.373	med
 56045	WY | WESTON | 56045	none	1.1	low	0.348	med
