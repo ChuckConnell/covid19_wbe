@@ -6,7 +6,7 @@
 import pandas as pd 
 from urllib import request
 
-COVID_ACT_NOW_DOWNLOAD = "https://api.covidactnow.org/v2/counties.timeseries.csv?apiKey=402c0523d9e64d4fb62f37fbf499bf7b"
+COVID_ACT_NOW_DOWNLOAD = "https://api.covidactnow.org/v2/counties.timeseries.csv?apiKey=XXXX"
 COVID_ACT_NOW_LOCAL = "/Users/chuck/Desktop/COVID Programming/Covid Act Now/counties.timeseries.csv"
 
 START_DATE = "20210715"  
