@@ -3,7 +3,7 @@
 # spreadsheet for easy scanning. 
 
 # The spreadsheet is a sanity check on the g.h covid data. For each country: number of case/list rows,
-# number of deaths, date of latest case in file. 
+# number of various case outcomes, date of latest case in file. 
 
 # Chuck Connell, November 2022
 
@@ -14,7 +14,7 @@ import pandas as pd
 # Gives fast close approximations. 1 means read all the data, no skipping. 
 # Just make sure to multiply results by this number.
 
-SAMPLE_SKIP = 1
+SAMPLE_SKIP = 1000
 
 # Directory that holds all the g.h CSV country files.  (input)
 
@@ -36,7 +36,7 @@ files = os.scandir(GH_COUNTRY_DIR)
 
 # Make a dataframe that will hold the output.
 
-summary_DF = pd.DataFrame(data=None, dtype=str, columns=["file", "latest_case", "rows", "deaths"])
+summary_DF = pd.DataFrame(data=None, dtype=str, columns=["file", "latest_case", "rows", "hospital_yes", "icu_yes", "outcome_admit", "outcome_icu", "outcome_death"])
 
 # Loop over all the files in the input directory.
  
@@ -58,15 +58,35 @@ for f in files:
     rows = str(gh_DF.shape[0])
     latest = str(gh_DF["events.confirmed.date"].max())
 
-    # Find the number of deaths in this file.
+    # Lowercase the fields are care about, just to prevent, upper/lower issues
 
     gh_DF["events.outcome.value"] = gh_DF["events.outcome.value"].str.lower()
-    gh_deaths_DF = gh_DF[gh_DF["events.outcome.value"].isin(["died","death"])]
-    deaths = str(gh_deaths_DF.shape[0])
+    gh_DF["events.hospitalAdmission.value"] = gh_DF["events.hospitalAdmission.value"].str.lower()
+    gh_DF["events.icuAdmission.value"] = gh_DF["events.icuAdmission.value"].str.lower()
+
+    # Extract the fields we want for this country, getting value subtotals, and convert to Python dict.
+    
+    outcomes = gh_DF["events.outcome.value"].value_counts().to_dict()
+    hospitals = gh_DF["events.hospitalAdmission.value"].value_counts().to_dict()
+    icus = gh_DF["events.icuAdmission.value"].value_counts().to_dict()
+
+    print (outcomes)
+    print (hospitals)
+    print (icus)
+    
+    # Get counts of known outcomes.
+    
+    outcome_admit = outcomes.get("hospitaladmission", 0)
+    outcome_icu = outcomes.get("icuadmission", 0)
+    outcome_death = outcomes.get("death", 0)
+
+    hospital_yes = hospitals.get("yes", 0)
+    icu_yes = icus.get("yes", 0)
+    
 
     # Append info for this file to the overall output spreadsheet.
     
-    summary_DF = summary_DF.append({"file":f.name, "latest_case":latest, "rows":rows, "deaths":deaths}, ignore_index=True)
+    summary_DF = summary_DF.append({"file":f.name, "latest_case":latest, "rows":rows, "hospital_yes":hospital_yes, "icu_yes":icu_yes, "outcome_admit":outcome_admit, "outcome_icu":outcome_icu, "outcome_death":outcome_death}, ignore_index=True)
     
 # Done with file loop. Close the file list.
 
