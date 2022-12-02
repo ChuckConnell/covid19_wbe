@@ -11,10 +11,10 @@ import os
 import fnmatch
 import pandas as pd 
 
-# Gives fast close approximations. 1 means read all the data, no skipping. 
+# 1 means to read all the input data. Set to 100 or 1000 for faster close approximations. 
 # Just make sure to multiply results by this number.
 
-SAMPLE_SKIP = 1000
+SAMPLE_SKIP = 1
 
 # Directory that holds all the g.h CSV country files.  (input)
 
@@ -58,7 +58,7 @@ for f in files:
     rows = str(gh_DF.shape[0])
     latest = str(gh_DF["events.confirmed.date"].max())
 
-    # Lowercase the fields are care about, just to prevent, upper/lower issues
+    # Lowercase the fields are care about, just to prevent upper/lower issues
 
     gh_DF["events.outcome.value"] = gh_DF["events.outcome.value"].str.lower()
     gh_DF["events.hospitalAdmission.value"] = gh_DF["events.hospitalAdmission.value"].str.lower()
@@ -70,10 +70,6 @@ for f in files:
     hospitals = gh_DF["events.hospitalAdmission.value"].value_counts().to_dict()
     icus = gh_DF["events.icuAdmission.value"].value_counts().to_dict()
 
-    print (outcomes)
-    print (hospitals)
-    print (icus)
-    
     # Get counts of known outcomes.
     
     outcome_admit = outcomes.get("hospitaladmission", 0)
@@ -83,7 +79,6 @@ for f in files:
     hospital_yes = hospitals.get("yes", 0)
     icu_yes = icus.get("yes", 0)
     
-
     # Append info for this file to the overall output spreadsheet.
     
     summary_DF = summary_DF.append({"file":f.name, "latest_case":latest, "rows":rows, "hospital_yes":hospital_yes, "icu_yes":icu_yes, "outcome_admit":outcome_admit, "outcome_icu":outcome_icu, "outcome_death":outcome_death}, ignore_index=True)
